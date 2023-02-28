@@ -1,59 +1,79 @@
 import 'dart:async';
-
-// ignore: unnecessary_import
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
 
 class MapSample extends StatefulWidget {
   const MapSample({Key? key}) : super(key: key);
-
 
   @override
   State<MapSample> createState() => MapSampleState();
 }
 
 class MapSampleState extends State<MapSample> {
-  
-  final Completer<GoogleMapController> _controller =
-      Completer<GoogleMapController>();
+  final Completer<GoogleMapController> _controller = Completer();
+  LatLng? _latLng;
 
-  static const CameraPosition _kGooglePlex = CameraPosition(
+  CameraPosition _kGooglePlex = const CameraPosition(
     target: LatLng(27.65594703211962, 85.32094949667898),
     zoom: 14.4746,
   );
 
-  static const CameraPosition _kLake = CameraPosition(
-      bearing: 192.8334901395799,
-      target: LatLng(27.65594703211962, 85.32094949667898),
-      tilt: 59.440717697143555,
-      zoom: 19.151926040649414);
+  Future<void> getCurrentLocation() async {
+    Location location = Location();
+    bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
+    LocationData _locationData;
+
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
+    _locationData = await location.getLocation();
+    _latLng = LatLng(_locationData.latitude!, _locationData.longitude!);
+    _kGooglePlex = CameraPosition(target: _latLng!, zoom: 14.4746,);
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getCurrentLocation();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title:const Text("Vehicle Pooling")),
-      body: GoogleMap(
-        mapType: MapType.normal,
-        markers: const {
-
-        },
-        initialCameraPosition: _kGooglePlex,
-        onMapCreated: (GoogleMapController controller) {
-          _controller.complete(controller);
-        },
+    return SafeArea(
+      child: Scaffold(
+        body: GoogleMap(
+          mapType: MapType.normal,
+          initialCameraPosition: _kGooglePlex,
+          markers: <Marker> {_setMarker()},
+          myLocationButtonEnabled: true,
+          myLocationEnabled: true,
+          onMapCreated: (GoogleMapController controller) {
+            _controller.complete(controller);
+          },
+        ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _goToTheLake,
-        label: const Text('Tilt the view!'),
-        icon: const Icon(Icons.directions_boat),
-      ),
-      
     );
   }
+}
 
-  Future<void> _goToTheLake() async {
-    final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
-  }
+_setMarker() {
+  return const Marker(
+    markerId: MarkerId("marker1"),
+    icon: BitmapDescriptor.defaultMarker,
+    position: LatLng(27.65594703211962, 85.32094949667898),
+  );
 }

@@ -4,7 +4,7 @@ import 'package:fairshare/Feedback.dart';
 import 'package:fairshare/map.dart';
 import 'package:fairshare/rate.dart';
 import 'package:fairshare/register.dart';
-import 'package:fairshare/settingpage.dart';
+import 'package:fairshare/schedule.dart';
 import 'package:fairshare/try2.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/components/toggle/gf_toggle.dart';
@@ -103,7 +103,7 @@ class _DriverMapState extends State<DriverMap> {
            
             ListTile(
               title: const Text(
-                "Setting",
+                "Schedule",
                 style: TextStyle(
                   fontSize: 20,
                 ),

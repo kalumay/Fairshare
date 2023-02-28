@@ -1,13 +1,14 @@
-// ignore: unused_import
+import 'package:fairshare/drivermap.dart';
+import 'package:fairshare/errorpage.dart';
 import 'package:fairshare/map.dart';
 import 'package:fairshare/rate.dart';
-import 'package:fairshare/settingpage.dart';
+import 'package:fairshare/Schedule.dart';
+import 'package:fairshare/splash.dart';
+import 'package:fairshare/try2.dart';
 import 'package:firebase_core/firebase_core.dart';
-// ignore: unused_import
 import 'feedback.dart';
 import 'firebase_options.dart';
-
-import 'package:fairshare/driver.dart';
+import 'package:fairshare/driverform.dart';
 import 'package:fairshare/otp.dart';
 import 'package:fairshare/rider.dart';
 import 'package:flutter/material.dart';
@@ -17,18 +18,31 @@ Future<void> main() async {
    await Firebase.initializeApp(
      options: DefaultFirebaseOptions.currentPlatform
      );
+     
   runApp(MaterialApp(
-    initialRoute: 'phone',
+    initialRoute: 'splash',
+    onUnknownRoute: (settings) {
+  return MaterialPageRoute(builder: (context) => const MyErrorWidget());
+},
+
     debugShowCheckedModeBanner: false,
+     
     routes: {
-      'phone':(context) =>  const MyApp(),
-      'verify':(context) => const MyVerify(),
-      'rider':(context) => const MainDrawer(),
-      'setting':(context) => const SettingPage(),
+      'splash':(context) => const Splash(),
+      'phone':(context) =>  const Register(),
+      'verify': (context) => MyVerify(
+              receivedID: ModalRoute.of(context)?.settings.arguments as String,
+            ),
+      'rider':(context) => const Rider(),
+      'schedule':(context) => const ScheduleRide(),
       'driver':(context) => const DriverForm(),
       'feedback':(context)=> const feedback(),
       'rate':(context) => const Rate(),
-      'map':(context) => const MapSample()
+      'map':(context) => const MapSample(),
+      'buttom':(context) => const ButtomSheet(),
+      'drivermap':(context) => const DriverMap(),
     },
+    
   ));
 }
+

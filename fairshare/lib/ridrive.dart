@@ -5,7 +5,7 @@ import 'package:fairshare/rider.dart';
 import 'package:flutter/material.dart';
 //import 'package:vehicle_renting_and_sharing/rider.dart';
 
-import 'driver.dart';
+import 'driverform.dart';
 
 class ridrive extends StatefulWidget {
   const ridrive({super.key});
@@ -60,7 +60,7 @@ class _ridriveState extends State<ridrive> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const MainDrawer(),
+                      builder: (context) => const Rider(),
                     ),
                   );
                 } else if (_selectedOption == 'driver') {

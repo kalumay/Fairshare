@@ -1,22 +1,28 @@
+// ignore_for_file: unused_import
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 //import '../utils/routes.dart';
 
-class Widget029 extends StatefulWidget {
-  const Widget029({Key? key}) : super(key: key);
+class ButtomSheet extends StatefulWidget {
+  const ButtomSheet({Key? key}) : super(key: key);
 
   @override
-  State<Widget029> createState() => _Widget029State();
+  State<ButtomSheet> createState() => _ButtomSheetState();
 }
 
-class _Widget029State extends State<Widget029> {
+class _ButtomSheetState extends State<ButtomSheet> {
   List<String> vehicleType=["Bike","Car"];
   String? selectVehicle;
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: ElevatedButton(
-        child: const Text('Model Botttom sheet'),
-        onPressed: () {
+      child: 
+      FutureBuilder<String>(builder: (_, snapshot) {
+          if (snapshot.hasError) return Text('Error = ${snapshot.error}');
+          if (snapshot.connectionState == ConnectionState.waiting) return const CircularProgressIndicator();
+          throw 
+          
           showModalBottomSheet(
             context: context,
             shape: const RoundedRectangleBorder(
@@ -47,17 +53,17 @@ class _Widget029State extends State<Widget029> {
                       ),
                     ),
                     
-                    DropdownButton(hint: const Text ('choose your vehicle'), 
-                    value: selectVehicle,
-                     items:vehicleType.map((e) {
-                       return const DropdownMenuItem
-                       (child: Text("Vehicle"),);
-                     }).toList(), 
-                     onChanged: (newvalue) {
-                      setState(() {
-                        selectVehicle= newvalue.toString();
-                      });
-                       },),
+                    // DropdownButton(hint: const Text ('choose your vehicle'), 
+                    // value: selectVehicle,
+                    //  items:vehicleType.map((e) {
+                    //    return const DropdownMenuItem
+                    //    (child: Text("Vehicle"),);
+                    //  }).toList(), 
+                    //  onChanged: (newvalue) {
+                    //   setState(() {
+                    //     selectVehicle= newvalue.toString();
+                    //   });
+                    //    },),
                     const SizedBox(
                       height: 50.0,
                     ),
@@ -95,8 +101,9 @@ class _Widget029State extends State<Widget029> {
               );
             }),
           );
-        },
-      ),
+  }
+  ),
+    
     );
   }
 }
