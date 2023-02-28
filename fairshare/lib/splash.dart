@@ -17,17 +17,13 @@ class Splash extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: AnimatedSplashScreen(
+    return AnimatedSplashScreen(
         splash:
         Image.asset('assests/icon.jpg',),
         nextScreen: const Register(),
         splashTransition: SplashTransition.rotationTransition,
         backgroundColor: Colors.white,
-      ),
-
-    );
+      );
 
   }
 }

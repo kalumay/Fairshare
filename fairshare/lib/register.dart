@@ -162,16 +162,17 @@ class _RegisterState extends State<Register> {
     auth.verifyPhoneNumber(
       phoneNumber: '+977 ${phoneNumber.text}',
       verificationCompleted: (PhoneAuthCredential credential) async {
-        // await auth.signInWithCredential(credential).then(
-        //   (value) {
-        //     print('Logged In Successfully');
-        //     final user = value.user;
-        //     if (user == null) {
-        //       return;
-        //     }
-        //     _storeData(user.uid);
-        //   },
-        // );
+        await auth.signInWithCredential(credential).then(
+          (value) {
+            print('Logged In Successfully');
+            Fluttertoast.showToast(msg: "Logged In Successfully");
+            final user = value.user;
+            if (user == null) {
+              return;
+            }
+            _storeData(user.uid);
+          },
+        );
         validateform();
       },
       verificationFailed: (FirebaseAuthException e) {
