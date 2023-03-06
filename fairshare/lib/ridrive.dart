@@ -1,4 +1,4 @@
-// ignore_for_file: camel_case_types
+// ignore_for_file: camel_case_types, unused_import
 
 import 'package:fairshare/map.dart';
 import 'package:fairshare/rider.dart';
@@ -16,7 +16,6 @@ class ridrive extends StatefulWidget {
 }
 
 class _ridriveState extends State<ridrive> {
-  String? _selectedOption;
 
   @override
   Widget build(BuildContext context) {
@@ -26,54 +25,41 @@ class _ridriveState extends State<ridrive> {
           alignment: Alignment.center,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[const Text("Select the feature you would like to continue with:",style: TextStyle(fontSize: 20),),
-            RadioListTile(
-              value: 'rider',
-              groupValue: _selectedOption,
-              onChanged: (value) {
-                setState(() {
-                  _selectedOption = value!;
-                });
-              },
-              title: const Text('Rider'),
-            ),
-            RadioListTile(
-              value: 'driver',
-              groupValue: _selectedOption,
-              onChanged: (value) {
-                setState(() {
-                  _selectedOption = value!;
-                });
-              },
-              title: const Text('Driver'),
-            ),
-            ElevatedButton(
+          children: 
+          [const Text("Select the feature you would like to continue with:",
+          style: TextStyle(fontSize: 30),textAlign:TextAlign.center,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SizedBox(
+                    width: 150,
+                height: 50,
+                    child: ElevatedButton(
+                      onPressed: () {
+                         Navigator.pushNamed(context, 'driver');
+                      },
+                      child: const Text('Driver'),
+                    ),
+                  ),
+                ),
+                 Padding(
+                   padding: const EdgeInsets.all(8.0),
+                   child: SizedBox(
+                     width: 150,
+                height: 50,
+                     child: ElevatedButton(
               onPressed: () {
-                
-                if (_selectedOption == 'rider') {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const MapSample(),
-                    ),
-                  );
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const Rider(),
-                    ),
-                  );
-                } else if (_selectedOption == 'driver') {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const DriverForm(),
-                    ),
-                  );
-                }
+                Navigator.pushNamed(context, 'rider');
               },
-              child: const Text('Next'),
+              child: const Text('Passenger'),
             ),
+                   ),
+                 ),
+              ],
+            ),
+           
           ],
         ),
       ),

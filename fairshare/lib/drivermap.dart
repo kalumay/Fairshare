@@ -1,18 +1,11 @@
-// ignore_for_file: unused_import
-
-import 'package:fairshare/Feedback.dart';
 import 'package:fairshare/map.dart';
 import 'package:fairshare/rate.dart';
-import 'package:fairshare/register.dart';
+import 'package:fairshare/rider.dart';
 import 'package:fairshare/schedule.dart';
-import 'package:fairshare/try2.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/components/toggle/gf_toggle.dart';
-import 'package:tuple/tuple.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-//import 'package:vehicle_renting_and_sharing/settingpage.dart';
-// ignore: unused_element
 FirebaseAuth _auth = FirebaseAuth.instance;
 
 class DriverMap extends StatefulWidget {
@@ -23,19 +16,17 @@ class DriverMap extends StatefulWidget {
 }
 
 class _DriverMapState extends State<DriverMap> {
- 
+  // TextEditingController _locationController = TextEditingController();
+  // TextEditingController _destinationController = TextEditingController();
+  // TextEditingController _priceController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Driver')),
       // ignore: prefer_const_constructors
       body:   Center(
-      child: Stack(
-       
-          children:  const [MapSample(),
-        
-        
-          ],
+      child: Stack( 
+          children:  const [MapSample(), ],
       ),
     ),
     
@@ -74,16 +65,6 @@ class _DriverMapState extends State<DriverMap> {
               leading: Icon(Icons.lock_clock_rounded),
               onTap: null,
             ),
-            const ListTile(
-              title: Text(
-                "Intercity",
-                style: TextStyle(
-                  fontSize: 20,
-                ),
-              ),
-              leading: Icon(Icons.language),
-              onTap: null,
-            ),
             ListTile(
               title: const Text(
                 "Active Status",
@@ -115,8 +96,8 @@ class _DriverMapState extends State<DriverMap> {
                     MaterialPageRoute(builder: (context) =>  const ScheduleRide()));
               },
             ),
-             ListTile(
               
+              ListTile(
               title: const Text(
                 "Logout",
                 style: TextStyle(
@@ -124,11 +105,13 @@ class _DriverMapState extends State<DriverMap> {
                 ),
               ),
               leading: const Icon(Icons.logout),
-              onTap: () {
-           Navigator.push(context,
-                    MaterialPageRoute(builder: (context) =>  const Register()));
+              onTap: () async {
+                 await _auth.signOut();
+            // ignore: use_build_context_synchronously
+             Navigator.pushReplacementNamed(context, 'phone');
           },
             ),
+
             ListTile(
               title: const Text(
                 "Rate this app",
@@ -143,9 +126,18 @@ class _DriverMapState extends State<DriverMap> {
                     MaterialPageRoute(builder: (context) => const Rate()));
               },
             ),
+
+             ElevatedButton(
+                        onPressed: () {
+                        Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const Rider()));
+                        },
+                        child: const Text('Passenger Mode'),
+                      ),
           ],
         ),
       ),
+       
        floatingActionButton: FloatingActionButton.extended(
   onPressed: () {
     showModalBottomSheet(
@@ -174,52 +166,6 @@ class _DriverMapState extends State<DriverMap> {
                         labelText: " Offer your fare price",
                       ),
                     ),
-                    
-                   //String?selectVehicle;
-
-Row(
-  children: [
-     const Text("Choose the vehicle:"),
-        DropdownButton<String>(
-    
-     // value:selectVehicle,
-    
-      onChanged: (String? value) {
-    
-        setState(() {
-    
-       //  selectVehicle = value;
-    
-        });
-    
-      },
-    
-      // ignore: prefer_const_literals_to_create_immutables
-    
-      items: const [
-    
-        DropdownMenuItem(
-    
-          value: 'Bike',
-    
-          child: Text('Bike'),
-    
-        ),
-    
-        DropdownMenuItem(
-    
-          value: 'Car',
-    
-          child: Text('Car'),
-    
-        ),
-    
-      ],
-      
-    
-    ),
-  ],
-),
 
                     const SizedBox(
                       height: 50.0,
@@ -228,12 +174,14 @@ Row(
                       children: [
                         ElevatedButton(
                             style: TextButton.styleFrom(
-                                minimumSize: const Size(100, 80)),
+                                minimumSize: const Size(30, 50)
+                                ),
                             onPressed: () {
-                              //Navigator.pushNamed(context, MyRoutes.homeRoute);
+                             // _storeData(userId);
+                              Navigator.pushNamed(context, "drivermap");
                             },
                             child: const Text(
-                              "Find a Driver",
+                              "Find a passenger",
                               style: TextStyle(
                                 fontSize: 25,
                                 fontWeight: FontWeight.bold,
@@ -264,4 +212,38 @@ Row(
 ),
     );
   }
+//  void _storeData(String userId) async {
+//   try {
+//     DocumentReference docRef = FirebaseFirestore.instance
+//         .collection('rideOffers')
+//         .doc(userId);
+
+//     await docRef.set({
+//       'location': _locationController.text,
+//       'destination': _destinationController.text,
+//       'price': _priceController.text,
+//       'driverId': userId,
+//       'status': 'Pending',
+//     });
+
+//     Fluttertoast.showToast(
+//         msg: "Data stored successfully!",
+//         toastLength: Toast.LENGTH_SHORT,
+//         gravity: ToastGravity.BOTTOM,
+//         timeInSecForIosWeb: 1,
+//         backgroundColor: Colors.green,
+//         textColor: Colors.white,
+//         fontSize: 16.0);
+//   } catch (e) {
+//     Fluttertoast.showToast(
+//         msg: "Failed to store data: $e",
+//         toastLength: Toast.LENGTH_SHORT,
+//         gravity: ToastGravity.BOTTOM,
+//         timeInSecForIosWeb: 1,
+//         backgroundColor: Colors.red,
+//         textColor: Colors.white,
+//         fontSize: 16.0);
+//   }
+// }
+
 }

@@ -2,11 +2,13 @@
 
 import 'package:fairshare/Feedback.dart';
 import 'package:fairshare/map.dart';
+import 'package:fairshare/payment.dart';
 import 'package:fairshare/rate.dart';
 import 'package:fairshare/register.dart';
 import 'package:fairshare/Schedule.dart';
 import 'package:fairshare/try2.dart';
 import 'package:flutter/material.dart';
+import 'package:khalti_flutter/khalti_flutter.dart';
 import 'package:tuple/tuple.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -23,10 +25,14 @@ class Rider extends StatefulWidget {
 }
 
 class _RiderState extends State<Rider> {
-  List<String> vehicleType=['Bike','Car'];
+  
+  String referenceId = "";
+  String? _selectedVehicle = 'Bike';
+  //List<String> vehicleType=['Bike','Car'];
   String? selectVehicle;
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       appBar: AppBar(title: const Text('Rider')),
       // ignore: prefer_const_constructors
@@ -51,7 +57,8 @@ class _RiderState extends State<Rider> {
                     width: 100,
                     height: 150,
                   ),
-                Text("Hello Rider!!",style: TextStyle(fontSize: 20),textAlign: TextAlign.right,),
+                // Text("Hello Rider!!",style: TextStyle(fontSize: 20),
+                // textAlign: TextAlign.left,),
                
                 ],
               ),
@@ -76,29 +83,43 @@ class _RiderState extends State<Rider> {
               leading: Icon(Icons.lock_clock_rounded),
               onTap: null,
             ),
-            const ListTile(
-              title: Text(
-                "Intercity",
+            ListTile(
+              title: const Text(
+                "Schedule",
                 style: TextStyle(
                   fontSize: 20,
                 ),
               ),
-              leading: Icon(Icons.language),
-              onTap: null,
+              leading: const Icon(Icons.settings),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) =>  const ScheduleRide()));
+              },
             ),
-            // ListTile(
+            ListTile(
+              title: const Text(
+                "Driver list",
+                style: TextStyle(
+                  fontSize: 20,
+                ),
+              ),
+              leading: const Icon(Icons.list_alt),
+              onTap: () {
+                // Navigator.of(context).pop();
+                // Navigator.push(context,
+                //     MaterialPageRoute(builder: (context) => const Rate()));
+              },
+            ), 
+            //  ListTile(
             //   title: const Text(
-            //     "Setting",
+            //     "Payment with Khalti",
             //     style: TextStyle(
             //       fontSize: 20,
             //     ),
             //   ),
-            //   leading: const Icon(Icons.settings),
-            //   onTap: () {
-            //     Navigator.of(context).pop();
-            //     Navigator.push(context,
-            //         MaterialPageRoute(builder: (context) => const SettingPage()));
-            //   },
+            //   leading: const Icon(Icons.currency_rupee_rounded),
+            //   onTap: (){ payWithKhaltiInApp();},
             // ),
              ListTile(
               
@@ -112,8 +133,7 @@ class _RiderState extends State<Rider> {
               onTap: () async {
                  await _auth.signOut();
             // ignore: use_build_context_synchronously
-            Navigator.push(context,
-                    MaterialPageRoute(builder: (context) =>  const Register()));
+             Navigator.pushReplacementNamed(context, 'phone');
           },
             ),
             ListTile(
@@ -131,17 +151,24 @@ class _RiderState extends State<Rider> {
               },
             ),
 
-             ListTile(
-              title: const Text(
-                "Feedback",
-                style: TextStyle(
-                  fontSize: 20,
-                ),
-              ),
-              leading: const Icon(Icons.language),
-              onTap: (){Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const feedback()));},
-            ),
+            //  ListTile(
+            //   title: const Text(
+            //     "Feedback",
+            //     style: TextStyle(
+            //       fontSize: 20,
+            //     ),
+            //   ),
+            //   leading: const Icon(Icons.language),
+            //   onTap: (){Navigator.push(context,
+            //         MaterialPageRoute(builder: (context) => const feedback()));},
+            // ),
+             ElevatedButton(
+                        onPressed: () {
+                        Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const DriverMap()));
+                        },
+                        child: const Text('Driver Mode'),
+                      ),
           ],
         ),
       ),
@@ -179,54 +206,24 @@ class _RiderState extends State<Rider> {
 Row(
   children: [
      const Text("Choose the vehicle:"),
-        DropdownButton<String>(
-    
-      value:selectVehicle,
-    
-      onChanged: (String? value) {
-    
-        setState(() {
-    
-         selectVehicle = value;
-    
-        });
-    
-      },
-    
-      // ignore: prefer_const_literals_to_create_immutables
-    
-      items: const [
-    
-        DropdownMenuItem(
-    
-          value: 'Bike',
-    
-          child: Text('Bike'),
-    
-        ),
-    
-        DropdownMenuItem(
-    
-          value: 'Car',
-    
-          child: Text('Car'),
-    
-        ),
-    
-      ],
-      
-    
-    ),
+DropdownButton<String>(
+  value: _selectedVehicle,
+  onChanged: (String? newValue) {
+    setState(() {
+        _selectedVehicle = newValue;
+    });
+  },
+  items: <String>['Bike','Car' ].map<DropdownMenuItem<String>>((String value) {
+    return DropdownMenuItem<String>(
+        value: value,
+        child: Text(value),
+    );
+  }).toList(),
+),
   ],
 ),
   //////////////////test puposeeee///////////////////////////////////////////////
-  ElevatedButton(
-                        onPressed: () {
-                        Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const DriverMap()));
-                        },
-                        child: const Text('Submit'),
-                      ),
+ 
 //////////////////////////////////////testtest////////////////////////////////////////
                     const SizedBox(
                       height: 50.0,
@@ -272,3 +269,56 @@ Row(
     );
   }
 }
+//   payWithKhaltiInApp() {
+//     KhaltiScope.of(context).pay(
+//       config: PaymentConfig(
+//         amount: 1000, //in paisa
+//         productIdentity: 'Product Id',
+//         productName: 'Product Name',
+//         mobileReadOnly: false,
+//       ),
+//       preferences: [
+//         PaymentPreference.,
+
+//       ],
+//       onSuccess: onSuccess,
+//       onFailure: onFailure,
+//       onCancel: onCancel,
+//     );
+//   }
+
+//   void onSuccess(PaymentSuccessModel success) {
+//     showDialog(
+//       context: context,
+//       builder: (context) {
+//         return AlertDialog(
+//           title: const Text('Payment Successful'),
+
+//           actions: [
+//             SimpleDialogOption(
+//                 child: const Text('OK'),
+//                 onPressed: () {
+//                   setState(() {
+//                     referenceId = success.idx;
+//                   });
+
+//                   Navigator.pop(context);
+//                 })
+//           ],
+//         );
+//       },
+//     );
+//   }
+
+//   void onFailure(PaymentFailureModel failure) {
+//     debugPrint(
+//       failure.toString(),
+//     );
+//   }
+
+//   void onCancel() {
+//     debugPrint('Cancelled');
+//   }
+
+
+

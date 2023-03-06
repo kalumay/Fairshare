@@ -1,3 +1,5 @@
+// ignore_for_file: no_leading_underscores_for_local_identifiers
+
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -12,7 +14,8 @@ class MapSample extends StatefulWidget {
 
 class MapSampleState extends State<MapSample> {
   final Completer<GoogleMapController> _controller = Completer();
-  LatLng? _latLng;
+  LatLng? _pickupLatLng;
+  LatLng? _destinationLatLng;
 
   CameraPosition _kGooglePlex = const CameraPosition(
     target: LatLng(27.65594703211962, 85.32094949667898),
@@ -40,8 +43,8 @@ class MapSampleState extends State<MapSample> {
       }
     }
     _locationData = await location.getLocation();
-    _latLng = LatLng(_locationData.latitude!, _locationData.longitude!);
-    _kGooglePlex = CameraPosition(target: _latLng!, zoom: 14.4746,);
+    _pickupLatLng = LatLng(_locationData.latitude!, _locationData.longitude!);
+    _kGooglePlex = CameraPosition(target: _pickupLatLng!, zoom: 14.4746,);
     setState(() {});
   }
 
@@ -50,6 +53,40 @@ class MapSampleState extends State<MapSample> {
     super.initState();
     getCurrentLocation();
   }
+////////////////////////////
+  void _addMarker(LatLng position) {
+    if (_pickupLatLng == null) {
+      _pickupLatLng = position;
+    } else if (_destinationLatLng == null) {
+      _destinationLatLng = position;
+    } else {
+      // clear existing markers and add new pickup marker
+      _pickupLatLng = position;
+      _destinationLatLng = null;
+    }
+    setState(() {});
+  }
+///////////////////////////////////
+Set<Marker> _buildMarkers() {
+    final Set<Marker> markers = {};
+    if (_pickupLatLng != null) {
+      markers.add(Marker(
+        markerId: const MarkerId("pickupMarker"),
+        position: _pickupLatLng!,
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+      ));
+    }
+    if (_destinationLatLng != null) {
+      markers.add(Marker(
+        markerId: const MarkerId("destinationMarker"),
+        position: _destinationLatLng!,
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+      ));
+    }
+     return markers;
+  }
+  
+
 
   @override
   Widget build(BuildContext context) {
@@ -58,9 +95,12 @@ class MapSampleState extends State<MapSample> {
         body: GoogleMap(
           mapType: MapType.normal,
           initialCameraPosition: _kGooglePlex,
-          markers: <Marker> {_setMarker()},
+          markers: _buildMarkers(),
           myLocationButtonEnabled: true,
           myLocationEnabled: true,
+          onTap: (LatLng position) {
+            _addMarker(position);
+          },
           onMapCreated: (GoogleMapController controller) {
             _controller.complete(controller);
           },
@@ -70,10 +110,4 @@ class MapSampleState extends State<MapSample> {
   }
 }
 
-_setMarker() {
-  return const Marker(
-    markerId: MarkerId("marker1"),
-    icon: BitmapDescriptor.defaultMarker,
-    position: LatLng(27.65594703211962, 85.32094949667898),
-  );
-}
+ 

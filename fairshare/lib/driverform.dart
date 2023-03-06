@@ -1,18 +1,10 @@
-// ignore: avoid_web_libraries_in_flutter
-//import 'dart:html';
+// ignore_for_file: avoid_web_libraries_in_flutter, avoid_print, use_build_context_synchronously
 
-// ignore_for_file: unused_import, duplicate_ignore
-
-import 'package:fairshare/drivermap.dart';
-//import 'package:fairshare/map.dart';
-// ignore: unused_import
-import 'package:fairshare/rate.dart';
-import 'package:fairshare/register.dart';
-import 'package:fairshare/schedule.dart';
+//import 'dart:js';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:getwidget/getwidget.dart';
-// ignore: unused_import
-import 'package:image_picker/image_picker.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 // Define a variable to hold the selected image
 // ignore: unused_element
@@ -23,7 +15,7 @@ import 'package:image_picker/image_picker.dart';
 
 
 class DriverForm extends StatefulWidget {
-  const DriverForm({super.key});
+  const DriverForm({required Key key}) : super(key: key);
   
 
   @override
@@ -31,6 +23,9 @@ class DriverForm extends StatefulWidget {
 }
 
 class _DriverFormState extends State<DriverForm> {
+  TextEditingController vname = TextEditingController();
+  TextEditingController licenseNumber = TextEditingController();
+  TextEditingController nPlate = TextEditingController();
   
   @override
   Widget build(BuildContext context) {
@@ -46,11 +41,18 @@ class _DriverFormState extends State<DriverForm> {
                        Padding(
                         padding: const EdgeInsets.all(10.0),
                       child:TextFormField(
+                         controller: vname,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter some text';
+                    }
+                    return null;
+                  },
                         // validator:(Stringmsg) {
                         // },
                         decoration: InputDecoration(
                           labelText: "Vehicle",
-                          hintText: "Enter the type of Vehicle",
+                          hintText: "Type of vehicle: eg bike",
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(1.0)
                           )
@@ -61,6 +63,13 @@ class _DriverFormState extends State<DriverForm> {
                        Padding(
                         padding: const EdgeInsets.all(10.0),
                       child:TextFormField(
+                         controller: licenseNumber,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter some text';
+                    }
+                    return null;
+                  },
                         keyboardType: TextInputType.phone,
                         // validator:(Stringmsg) {
                         // },
@@ -78,32 +87,75 @@ class _DriverFormState extends State<DriverForm> {
                        Padding(
                         padding: const EdgeInsets.all(10.0),
                       child:TextFormField(
-                        keyboardType: TextInputType.phone,
-                        // validator:(Stringmsg) {
-                        // },
-                        decoration: InputDecoration(
-                          labelText: "Number Plate",
-                          hintText: "Enter your number Plate",
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(1.0)
-                          )
-                        ),
-                      ),
-                      
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                        Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const DriverMap()));
-                        },
-                        child: const Text('Submit'),
-                      ),
-                    ],
-                  ),
-        )
-      )
-      ),
-
-    );
-  }
+                         controller: nPlate,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter some text';
 }
+return null;
+},
+// validator:(Stringmsg) {
+// },
+decoration: InputDecoration(
+labelText: "Number Plate",
+hintText: "Enter your vehicle's number plate",
+border: OutlineInputBorder(
+borderRadius: BorderRadius.circular(1.0)
+)
+),
+),
+
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        _submit();
+                      },
+                      child: const Text("Submit")
+                    ),
+                  ),
+                ],
+              ),
+   ),
+  ),
+),
+);
+}
+
+void _submit() async {
+final User? user = FirebaseAuth.instance.currentUser;
+final uid = user!.uid;
+final driverRef = FirebaseFirestore.instance.collection('drivers').doc(uid);
+await driverRef.set({
+'vehicle_name': vname.text,
+'license_number': licenseNumber.text,
+'number_plate': nPlate.text,
+}).then((value) {
+Fluttertoast.showToast(
+msg: "Driver details added successfully",
+toastLength: Toast.LENGTH_SHORT,
+gravity: ToastGravity.BOTTOM,
+timeInSecForIosWeb: 1,
+backgroundColor: Colors.green,
+textColor: Colors.white,
+fontSize: 16.0,
+);
+Navigator.pushReplacementNamed(context, 'drivermap');
+}).catchError((error) {
+Fluttertoast.showToast(
+msg: "Failed to add driver details: $error",
+toastLength: Toast.LENGTH_SHORT,
+gravity: ToastGravity.BOTTOM,
+timeInSecForIosWeb: 1,
+backgroundColor: Colors.red,
+textColor: Colors.white,
+fontSize: 16.0,
+);
+});
+}
+}
+
+
+
+
