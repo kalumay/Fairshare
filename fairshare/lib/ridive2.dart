@@ -27,7 +27,7 @@ class _ridriveState extends State<ridrive> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>
           [const Text("Select the feature you would like to continue with:",
-          style: TextStyle(fontSize: 20),),
+          style: TextStyle(fontSize: 30),),
             ElevatedButton(
               onPressed: () {
                  Navigator.pushReplacementNamed(context, 'driver');

@@ -13,6 +13,7 @@ import 'feedback.dart';
 import 'firebase_options.dart';
 import 'package:fairshare/driverform.dart';
 import 'package:fairshare/otp.dart';
+import 'package:fairshare/driverlist.dart';
 import 'package:fairshare/rider.dart';
 import 'package:flutter/material.dart';
 import 'package:fairshare/register.dart';
@@ -48,6 +49,7 @@ Future<void> main() async {
       'map':(context) => const MapSample(),
       'buttom':(context) => const ButtomSheet(),
       'drivermap':(context) => const DriverMap(),
+      'driverlist':(context) => DriverList(),
       'payment':(context) => const PayPage()
     },
     

@@ -148,22 +148,35 @@ class _DriverMapState extends State<DriverMap> {
                 child: Column(
                   // ignore: prefer_const_literals_to_create_immutables
                   children: <Widget>[
-                    TextFormField(
-                      decoration: const InputDecoration(
-                        hintText: " location ",
-                        labelText: " Your location",
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                           hintText: " location ",
+                          labelText: " Your location",
+                         border: OutlineInputBorder( borderRadius: BorderRadius.circular(10.0),),
+
+                        ),
                       ),
                     ),
-                    TextFormField(
-                      decoration: const InputDecoration(
-                        hintText: "Destination",
-                        labelText: "Enter Destination",
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextFormField(
+                        decoration:InputDecoration(
+                          hintText: "Destination",
+                          labelText: "Enter Destination",
+                           border: OutlineInputBorder( borderRadius: BorderRadius.circular(10.0),),
+                        ),
                       ),
                     ),
-                    TextFormField(
-                      decoration: const InputDecoration(
-                        hintText: "price",
-                        labelText: " Offer your fare price",
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextFormField(
+                        decoration:InputDecoration(
+                          hintText: "price",
+                          labelText: " Offer your fare price",
+                           border: OutlineInputBorder( borderRadius: BorderRadius.circular(10.0),),
+                        ),
                       ),
                     ),
 
