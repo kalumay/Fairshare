@@ -1,4 +1,4 @@
-// ignore_for_file: unused_import
+// ignore_for_file: unused_import, unnecessary_import, no_leading_underscores_for_local_identifiers, prefer_typing_uninitialized_variables
 
 import 'package:fairshare/Feedback.dart';
 import 'package:fairshare/map.dart';
@@ -33,13 +33,14 @@ class _RiderState extends State<Rider> {
   @override
   Widget build(BuildContext context) {
     
+    var _onLocationSelected;
     return Scaffold(
       appBar: AppBar(title: const Text('Rider')),
       // ignore: prefer_const_constructors
       body:   Center(
       child: Stack(
        
-          children:  const [MapSample(), 
+          children:   [MapSample(onLocationSelected: _onLocationSelected), 
         
           ],
       ),

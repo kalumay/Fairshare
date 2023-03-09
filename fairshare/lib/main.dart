@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_import, no_leading_underscores_for_local_identifiers
+
 import 'package:fairshare/drivermap.dart';
 import 'package:fairshare/errorpage.dart';
 import 'package:fairshare/login.dart';
@@ -46,7 +48,7 @@ Future<void> main() async {
       'driver':(context) => DriverForm(key: UniqueKey()),
       'feedback':(context)=> const feedback(),
       'rate':(context) => const Rate(),
-      'map':(context) => const MapSample(),
+      'map':(context) =>  MapSample(onLocationSelected: (_pickupLatLng, destinationLatLng ) {  },),
       'buttom':(context) => const ButtomSheet(),
       'drivermap':(context) => const DriverMap(),
       'driverlist':(context) => DriverList(),

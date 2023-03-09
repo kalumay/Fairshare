@@ -17,10 +17,8 @@ import 'package:image_picker/image_picker.dart';
 // Define a function to launch the image picker
 // ignore: unused_element
 
-
 class DriverForm extends StatefulWidget {
   const DriverForm({required Key key}) : super(key: key);
-  
 
   @override
   State<DriverForm> createState() => _DriverFormState();
@@ -33,125 +31,124 @@ class _DriverFormState extends State<DriverForm> {
   File? _licenseImageFile;
   File? _numberPlateImageFile;
 
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Driver')),
-      body:  
-      Container( 
-        padding: const EdgeInsets.symmetric(vertical: 25.0,horizontal: 25.0),
-       child: SingleChildScrollView( child: Form(
-         // key: _DriverFormKey,
-          child: Column(
-                    children: <Widget>[
-                       Padding(
-                        padding: const EdgeInsets.all(10.0),
-                      child:TextFormField(
-                         controller: vname,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter some text';
-                    }
-                    return null;
-                  },
-                        // validator:(Stringmsg) {
-                        // },
-                        decoration: InputDecoration(
-                          labelText: "Vehicle Type",
-                          hintText: "Bike/Car",
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(1.0)
-                          )
-                        ),
-                      ),
-                      
-                      ),
-                       Padding(
-                        padding: const EdgeInsets.all(10.0),
-                      child:TextFormField(
-                         controller: licenseNumber,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter some text';
-                    }
-                    return null;
-                  },
-                        keyboardType: TextInputType.phone,
-                        // validator:(Stringmsg) {
-                        // },
-                        decoration: InputDecoration(
-                          labelText: "Licence Number",
-                          hintText: "Enter your Licence number",
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(1.0)
-                          )
-                        ),
-                      ),
-                      
-                    
-                      ),
-                       Padding(
-                        padding: const EdgeInsets.all(10.0),
-                      child:TextFormField(
-                         controller: nPlate,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter some text';
-}
-return null;
-},
+      body: Container(
+        padding: const EdgeInsets.symmetric(vertical: 25.0, horizontal: 25.0),
+        child: SingleChildScrollView(
+          child: Form(
+            // key: _DriverFormKey,
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: TextFormField(
+                    controller: vname,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter some text';
+                      }
+                      return null;
+                    },
+                    // validator:(Stringmsg) {
+                    // },
+                    decoration: InputDecoration(
+                        labelText: "Vehicle Type",
+                        hintText: "Bike/Car",
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(1.0))),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: TextFormField(
+                    controller: licenseNumber,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter some text';
+                      }
+                      return null;
+                    },
+                    keyboardType: TextInputType.phone,
+                    // validator:(Stringmsg) {
+                    // },
+                    decoration: InputDecoration(
+                        labelText: "Licence Number",
+                        hintText: "Enter your Licence number",
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(1.0))),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: TextFormField(
+                    controller: nPlate,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter some text';
+                      }
+                      return null;
+                    },
 // validator:(Stringmsg) {
 // },
-decoration: InputDecoration(
-labelText: "Number Plate",
-hintText: "Enter your vehicle's number plate",
-border: OutlineInputBorder(
-borderRadius: BorderRadius.circular(1.0)
-)
-),
-),
+                    decoration: InputDecoration(
+                        labelText: "Number Plate",
+                        hintText: "Enter your vehicle's number plate",
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(1.0))),
                   ),
-                  Padding(
-  padding: const EdgeInsets.all(10.0),
-  child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [const Text("License Photo:",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
-      ElevatedButton(
-        onPressed: _pickLicenseImage,
-        child: const Text("Upload"),
-      ),
-    ],
-  ),
-),
-Padding(
-  padding: const EdgeInsets.all(10.0),
-  child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [const Text("Number Plate Photo:",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold)),
-      ElevatedButton(
-        onPressed: _pickNumberPlateImage,
-        child: const Text("Upload"),
-      ),
-    ],
-  ),
-),
-
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: ElevatedButton(
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        "License Photo:",
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      ElevatedButton(
+                        onPressed: _pickLicenseImage,
+                        child: const Text("Upload"),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text("Number Plate Photo:",
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold)),
+                      ElevatedButton(
+                        onPressed: _pickNumberPlateImage,
+                        child: const Text("Upload"),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: ElevatedButton(
                       onPressed: () {
                         _submit();
                       },
-                      child: const Text("Submit")
-                    ),
-                  ),
-                ],
-              ),
-   ),
-  ),
-),
-);
-}
-Future<void> _pickLicenseImage() async {
+                      child: const Text("Submit")),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _pickLicenseImage() async {
     final ImagePicker _picker = ImagePicker();
     final XFile? image = await _picker.pickImage(
       source: ImageSource.gallery,
@@ -173,10 +170,10 @@ Future<void> _pickLicenseImage() async {
     });
   }
 
-void _submit() async {
-final User? user = FirebaseAuth.instance.currentUser;
-final uid = user!.uid;
-final driverRef = FirebaseFirestore.instance.collection('drivers').doc(uid);
+  void _submit() async {
+    final User? user = FirebaseAuth.instance.currentUser;
+    final uid = user!.uid;
+    final driverRef = FirebaseFirestore.instance.collection('drivers').doc(uid);
 // Upload License Photo
     if (_licenseImageFile != null) {
       final licenseImageRef =
@@ -185,7 +182,7 @@ final driverRef = FirebaseFirestore.instance.collection('drivers').doc(uid);
       final String licenseImageUrl = await licenseImageRef.getDownloadURL();
       await driverRef.update({'license_image_url': licenseImageUrl});
     }
-     // Upload Number Plate Photo
+    // Upload Number Plate Photo
     if (_numberPlateImageFile != null) {
       final numberPlateImageRef =
           FirebaseStorage.instance.ref().child('number_plates/$uid.jpg');
@@ -195,36 +192,32 @@ final driverRef = FirebaseFirestore.instance.collection('drivers').doc(uid);
       await driverRef.update({'number_plate_image_url': numberPlateImageUrl});
     }
     // Update driver details
-await driverRef.set({
-'vehicle_name': vname.text,
-'license_number': licenseNumber.text,
-'number_plate': nPlate.text,
+    await driverRef.set({
+      'vehicle_name': vname.text,
+      'license_number': licenseNumber.text,
+      'number_plate': nPlate.text,
 //'License_photo': l
-}).then((value) {
-Fluttertoast.showToast(
-msg: "Driver details added successfully",
-toastLength: Toast.LENGTH_SHORT,
-gravity: ToastGravity.BOTTOM,
-timeInSecForIosWeb: 1,
-backgroundColor: Colors.green,
-textColor: Colors.white,
-fontSize: 16.0,
-);
-Navigator.pushReplacementNamed(context, 'drivermap');
-}).catchError((error) {
-Fluttertoast.showToast(
-msg: "Failed to add driver details: $error",
-toastLength: Toast.LENGTH_SHORT,
-gravity: ToastGravity.BOTTOM,
-timeInSecForIosWeb: 1,
-backgroundColor: Colors.red,
-textColor: Colors.white,
-fontSize: 16.0,
-);
-});
+    }).then((value) {
+      Fluttertoast.showToast(
+        msg: "Driver details added successfully",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+      Navigator.pushReplacementNamed(context, 'drivermap');
+    }).catchError((error) {
+      Fluttertoast.showToast(
+        msg: "Failed to add driver details: $error",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    });
+  }
 }
-}
-
-
-
-
