@@ -287,6 +287,7 @@
 
 import 'dart:convert';
 //import 'dart:js';
+import 'dart:ui' show lerpDouble;
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:fairshare/Schedule.dart';
 import 'package:fairshare/rate.dart';
@@ -299,131 +300,10 @@ import 'package:google_maps_webservice/src/places.dart';
 import 'rider.dart';
 import 'package:google_api_headers/google_api_headers.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter/src/rendering/box.dart';
 
 
 FirebaseAuth _auth = FirebaseAuth.instance;
-class AutocompletePrediction {
-  /// [description] contains the human-readable name for the returned result. For establishment results, this is usually
-  /// the business name.
-  final String? description;
-
-  /// [structuredFormatting] provides pre-formatted text that can be shown in your autocomplete results
-  final StructuredFormatting? structuredFormatting;
-
-  /// [placeId] is a textual identifier that uniquely identifies a place. To retrieve information about the place,
-  /// pass this identifier in the placeId field of a Places API request. For more information about place IDs.
-  final String? placeId;
-
-  /// [reference] contains reference.
-  final String? reference;
-
-  AutocompletePrediction({
-    this.description,
-    this.structuredFormatting,
-    this.placeId,
-    this.reference,
-  });
-
-  factory AutocompletePrediction.fromJson(Map<String, dynamic> json) {
-    return AutocompletePrediction(
-      description: json['description'] as String?,
-      placeId: json['place_id'] as String?,
-      reference: json['reference'] as String?,
-      structuredFormatting: json['structured_formatting'] != null
-          ? StructuredFormatting.fromJson(json['structured_formatting'])
-          : null,
-    );
-  }
-}
-
-class StructuredFormatting {
-  /// [mainText] contains the main text of a prediction, usually the name of the place.
-  final String? mainText;
-
-  /// [secondaryText] contains the secondary text of a prediction, usually the location of the place.
-  final String? secondaryText;
-
-  StructuredFormatting({this.mainText, this.secondaryText});
-
-  factory StructuredFormatting.fromJson(Map<String, dynamic> json) {
-    return StructuredFormatting(
-      mainText: json['main_text'] as String?,
-      secondaryText: json['secondary_text'] as String?,
-    );
-  }
-}
-
-class PlaceAutocompleteResponse {
-  final String? status;
-  final List<AutocompletePrediction>? predictions;
-
-  PlaceAutocompleteResponse({this.status, this.predictions});
-
-  factory PlaceAutocompleteResponse.fromJson(Map<String, dynamic> json) {
-    return PlaceAutocompleteResponse(
-      status: json['status'] as String?,
-      predictions: json['predictions'] != null
-          ? json['predictions']
-              .map<AutocompletePrediction>(
-                  (json) => AutocompletePrediction.fromJson(json))
-              .toList()
-          : null,
-    );
-  }
-
-  static PlaceAutocompleteResponse parseAutocompleteResult(
-      String responseBody) {
-    final parsed = json.decode(responseBody).cast<String, dynamic>();
-
-    return PlaceAutocompleteResponse.fromJson(parsed);
-  }
-}
-class NetworkUtility{
-  static Future<String?> fetchUrl(Uri uri, {Map<String,String>? headers}) async{
-    try{
-      final response= await http.get(uri, headers: headers);
-      if(response.statusCode==200){
-        return response.body;
-      }
-    } catch(e){
-      debugPrint(e.toString());
-    }
-    return null;
-  }
-}
-class LocationListTile extends StatelessWidget {
-  const LocationListTile({
-    Key? key,
-    required this.location,
-    required this.press,
-  }) : super(key: key);
-
-  final String location;
-  final VoidCallback press;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        ListTile(
-          onTap: press,
-          horizontalTitleGap: 0,
-          //leading: SvgPicture.asset("assets/icons/location_pin.svg"),
-          title: Text(
-            location,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-        const Divider(
-          height: 2,
-          thickness: 2,
-          color: Colors.black,
-        ),
-      ],
-    );
-  }
-}
 
 class DriverMap extends StatefulWidget {
   const DriverMap({Key? key}) : super(key: key);
@@ -444,26 +324,7 @@ class DriverMap extends StatefulWidget {
     });
   }
 late GoogleMapController googleMapController;
-List<AutocompletePrediction> placePredictions=[];
-void placeAutocomplate(String query) async {
-  var googleAPIkey="AIzaSyC1e1LEMoEjOqMBF7QiGYMQa6gfwXdGkTk";
-  Uri uri= Uri.https(
-    'maps.googleapis.com',
-    'maps/api/place/autocomplete/json',
-    {
-      "input": query,
-      "key": googleAPIkey,
-    });
-    String? response= await NetworkUtility.fetchUrl(uri);
 
-    if(response!= null){
-      PlaceAutocompleteResponse result= 
-      PlaceAutocompleteResponse.parseAutocompleteResult(response);
-    if(result.predictions!= null){
-placePredictions= result.predictions!;
-    }
-    }
-}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -498,6 +359,7 @@ placePredictions= result.predictions!;
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                           //.. List<Placemark> placemarks = await placemarkFromCoordinates(_pickup!.latitude, _pickup!.longitude),
                             const Text('Pickup location:'),
                             Text('${_pickup!.latitude}, ${_pickup!.longitude}'),
                             const SizedBox(height: 16),
@@ -523,112 +385,115 @@ placePredictions= result.predictions!;
         ),
       ),
       drawer: Drawer(
-        child: Column(
-          children: <Widget>[
-            Container(
-              color: Theme.of(context).primaryColor,
-              width: double.infinity,
-              child: Column(
-                children: const <Widget>[
-                  SizedBox(
-                    width: 100,
-                    height: 150,
-                  )
+        child: SizedBox(
+          height:MediaQuery.of(context).size.height,
+          child: Column(
+            children: <Widget>[
+              Container(
+                color: Theme.of(context).primaryColor,
+                width: double.infinity,
+                child: Column(
+                  children: const <Widget>[
+                    SizedBox(
+                      width: 100,
+                      height: 150,
+                    )
+                  ],
+                ),
+              ),
+              const ListTile(
+                title: Text(
+                  "Home",
+                  style: TextStyle(
+                    fontSize: 20,
+                  ),
+                ),
+                leading: Icon(Icons.home),
+                onTap: null,
+              ),
+              const ListTile(
+                title: Text(
+                  "Travel history",
+                  style: TextStyle(
+                    fontSize: 20,
+                  ),
+                ),
+                leading: Icon(Icons.lock_clock_rounded),
+                onTap: null,
+              ),
+              Row(
+                children: [
+                  ListTile(
+                    title: const Text(
+                      "Active Status",
+                      style: TextStyle(
+                        fontSize: 20,
+                      ),
+                    ),
+                    leading: const Icon(Icons.how_to_reg_rounded),
+                    onTap: () {},
+                  ),
+                  GFToggle(
+                    onChanged: (val) {},
+                    value: true,
+                  ),
                 ],
               ),
-            ),
-            const ListTile(
-              title: Text(
-                "Home",
-                style: TextStyle(
-                  fontSize: 20,
-                ),
-              ),
-              leading: Icon(Icons.home),
-              onTap: null,
-            ),
-            const ListTile(
-              title: Text(
-                "Travel history",
-                style: TextStyle(
-                  fontSize: 20,
-                ),
-              ),
-              leading: Icon(Icons.lock_clock_rounded),
-              onTap: null,
-            ),
-            Row(
-              children: [
-                ListTile(
-                  title: const Text(
-                    "Active Status",
-                    style: TextStyle(
-                      fontSize: 20,
-                    ),
+              ListTile(
+                title: const Text(
+                  "Schedule",
+                  style: TextStyle(
+                    fontSize: 20,
                   ),
-                  leading: const Icon(Icons.how_to_reg_rounded),
-                  onTap: () {},
                 ),
-                GFToggle(
-                  onChanged: (val) {},
-                  value: true,
-                ),
-              ],
-            ),
-            ListTile(
-              title: const Text(
-                "Schedule",
-                style: TextStyle(
-                  fontSize: 20,
-                ),
+                leading: const Icon(Icons.settings),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const ScheduleRide()));
+                },
               ),
-              leading: const Icon(Icons.settings),
-              onTap: () {
-                Navigator.of(context).pop();
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const ScheduleRide()));
-              },
-            ),
-            ListTile(
-              title: const Text(
-                "Logout",
-                style: TextStyle(
-                  fontSize: 20,
+              ListTile(
+                title: const Text(
+                  "Logout",
+                  style: TextStyle(
+                    fontSize: 20,
+                  ),
                 ),
+                leading: const Icon(Icons.logout),
+                onTap: () async {
+                  await _auth.signOut();
+                  // ignore: use_build_context_synchronously
+                  Navigator.pushReplacementNamed(context, 'phone');
+                },
               ),
-              leading: const Icon(Icons.logout),
-              onTap: () async {
-                await _auth.signOut();
-                // ignore: use_build_context_synchronously
-                Navigator.pushReplacementNamed(context, 'phone');
-              },
-            ),
-            ListTile(
-              title: const Text(
-                "Rate this app",
-                style: TextStyle(
-                  fontSize: 20,
+              ListTile(
+                title: const Text(
+                  "Rate this app",
+                  style: TextStyle(
+                    fontSize: 20,
+                  ),
                 ),
+                leading: const Icon(Icons.settings),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => const Rate()));
+                },
               ),
-              leading: const Icon(Icons.settings),
-              onTap: () {
-                Navigator.of(context).pop();
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const Rate()));
-              },
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    // ignore: prefer_const_constructors
-                    MaterialPageRoute(builder: (context) => Dlist()));
-              },
-              child: const Text('Passenger Mode'),
-            ),
-          ],
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      // ignore: prefer_const_constructors
+                      MaterialPageRoute(builder: (context) => Dlist()));
+                },
+                child: const Text('Passenger Mode'),
+              ),
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -636,7 +501,7 @@ placePredictions= result.predictions!;
           showModalBottomSheet(
               context: context,
               builder: ((context) {
-                const Mode _mode = Mode.overlay;
+                //const Mode _mode = Mode.overlay;
                 return Material(
                   child: Column(
                     children: <Widget>[
@@ -651,14 +516,15 @@ placePredictions= result.predictions!;
                           ),
                         )),
                       ),
-                        Expanded(
-                          child: 
-                          ListView.builder(
-                          itemCount: placePredictions.length,
-                          itemBuilder: (context,index)=> LocationListTile(
-                            press:(){},
-                            location: placePredictions[index].description!,
-                          )),),
+                        // Expanded(
+                        //   child: 
+                        //   ListView.builder(
+                        //     shrinkWrap: true,
+                        //   itemCount: placePredictions.length,
+                        //   itemBuilder: (context,index)=> LocationListTile(
+                        //     press:(){},
+                        //     location: placePredictions[index].description!,
+                        //   )),),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: TextFormField(

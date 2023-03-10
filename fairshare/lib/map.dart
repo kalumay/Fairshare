@@ -181,8 +181,8 @@ class _MapSampleState extends State<MapSample> {
       onMapCreated: _onMapCreated,
       onTap: _onTap,
       initialCameraPosition: const CameraPosition(
-        target: LatLng(37.77483, -122.41942),
-        zoom: 12,
+        target: LatLng(27.65594703211962, 85.32094949667898),
+        zoom: 14,
       ),
       markers: {
         if (_pickup != null) Marker(
