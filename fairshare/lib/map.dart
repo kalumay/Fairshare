@@ -1,12 +1,12 @@
 // // ignore_for_file: no_leading_underscores_for_local_identifiers
 
-// ignore_for_file: duplicate_import, unused_import
+// ignore_for_file: duplicate_import, unused_import, unused_local_variable, avoid_function_literals_in_foreach_calls
 
 //import 'dart:async';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+
+//import 'package:flutter/material.dart';
 //import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+//import 'package:google_maps_flutter/google_maps_flutter.dart';
 //import 'package:location/location.dart';
 
 // class MapSample extends StatefulWidget {
@@ -139,8 +139,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 //     );
 //   }
 // }
-
+import 'package:flutter/foundation.dart';
  import 'package:flutter/material.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+//import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'rider.dart';
 
@@ -155,6 +157,7 @@ class MapSample extends StatefulWidget {
 
 class _MapSampleState extends State<MapSample> {
   late GoogleMapController _controller;
+  //final Mode _mode= Mode.overlay;
   LatLng? _pickup;
   LatLng? _destination;
 
@@ -174,14 +177,34 @@ class _MapSampleState extends State<MapSample> {
       });
     }
   }
+// List<LatLng> polylineCoordinates=[];
+// void getPolyPoints() async{
+//   PolylinePoints polylinePoints= PolylinePoints();
+//   String googleApiKey="AIzaSyC1e1LEMoEjOqMBF7QiGYMQa6gfwXdGkTk";
+  
+//   PolylineResult result= await polylinePoints.getRouteBetweenCoordinates(
+//     googleApiKey, 
+//     PointLatLng(_pickup!.latitude,_pickup!.longitude), 
+//     PointLatLng(_destination!.latitude, _destination!.longitude));
+
+// if (result.points.isNotEmpty){
+//   result.points.forEach(
+//     (PointLatLng point) => polylineCoordinates.add(
+//       LatLng(point.latitude, point.longitude),
+//     ),
+//    );
+// }
+// }
 
   @override
   Widget build(BuildContext context) {
     return GoogleMap(
       onMapCreated: _onMapCreated,
       onTap: _onTap,
+      
       initialCameraPosition: const CameraPosition(
-        target: LatLng(27.65594703211962, 85.32094949667898),
+       target: LatLng(27.65594703211962, 85.32094949667898),
+       
         zoom: 14,
       ),
       markers: {

@@ -1,19 +1,12 @@
-// ignore_for_file: no_leading_underscores_for_local_identifiers, prefer_typing_uninitialized_variables, prefer_const_literals_to_create_immutables, avoid_print
+// ignore_for_file: no_leading_underscores_for_local_identifiers, prefer_typing_uninitialized_variables, prefer_const_literals_to_create_immutables, avoid_print, unused_field
 
-// import 'package:fairshare/Feedback.dart';
-// import 'package:fairshare/payment.dart';
-// import 'package:fairshare/register.dart';
-// import 'package:fairshare/try2.dart';
-// import 'package:khalti_flutter/khalti_flutter.dart';
-// import 'package:tuple/tuple.dart';
-// import 'package:place_picker/widgets/place_picker.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:fairshare/map.dart';
 import 'package:fairshare/rate.dart';
 import 'package:fairshare/Schedule.dart';
 import 'package:flutter/material.dart';
-//import 'package:place_picker/place_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'drivermap.dart';
+import 'driverform.dart';
 
 //import 'package:vehicle_renting_and_sharing/settingpage.dart';
 FirebaseAuth _auth = FirebaseAuth.instance;
@@ -38,15 +31,14 @@ class Rider extends StatefulWidget {
 class _RiderState extends State<Rider> {
   
   String referenceId = "";
-  //String? _selectedVehicle = 'Bike';
-  //List<String> vehicleType=['Bike','Car'];
-  String? selectVehicle;
+  final String _selectedVehicle = 'Bike';
+  late GoogleMapController mapController;
   @override
   Widget build(BuildContext context) {
     
-    //var _onLocationSelected;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Rider')),
+      appBar: AppBar(title: const Text('Passenger')),
       // ignore: prefer_const_constructors
       body:   Center(
       child: Stack(
@@ -87,16 +79,16 @@ class _RiderState extends State<Rider> {
               leading: Icon(Icons.home),
               onTap: null,
             ),
-            const ListTile(
-              title: Text(
-                "Travel history",
-                style: TextStyle(
-                  fontSize: 20,
-                ),
-              ),
-              leading: Icon(Icons.lock_clock_rounded),
-              onTap: null,
-            ),
+            // const ListTile(
+            //   title: Text(
+            //     "Travel history",
+            //     style: TextStyle(
+            //       fontSize: 20,
+            //     ),
+            //   ),
+            //   leading: Icon(Icons.lock_clock_rounded),
+            //   onTap: null,
+            // ),
             ListTile(
               title: const Text(
                 "Schedule",
@@ -125,18 +117,7 @@ class _RiderState extends State<Rider> {
                 //     MaterialPageRoute(builder: (context) => const Rate()));
               },
             ), 
-            //  ListTile(
-            //   title: const Text(
-            //     "Payment with Khalti",
-            //     style: TextStyle(
-            //       fontSize: 20,
-            //     ),
-            //   ),
-            //   leading: const Icon(Icons.currency_rupee_rounded),
-            //   onTap: (){ payWithKhaltiInApp();},
-            // ),
              ListTile(
-              
               title: const Text(
                 "Logout",
                 style: TextStyle(
@@ -165,21 +146,12 @@ class _RiderState extends State<Rider> {
               },
             ),
 
-            //  ListTile(
-            //   title: const Text(
-            //     "Feedback",
-            //     style: TextStyle(
-            //       fontSize: 20,
-            //     ),
-            //   ),
-            //   leading: const Icon(Icons.language),
-            //   onTap: (){Navigator.push(context,
-            //         MaterialPageRoute(builder: (context) => const feedback()));},
-            // ),
              ElevatedButton(
                         onPressed: () {
-                        Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const DriverMap()));
+                        Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) =>  DriverForm(key: UniqueKey(),)),
+            );
                         },
                         child: const Text('Driver Mode'),
                       ),
@@ -192,9 +164,27 @@ class _RiderState extends State<Rider> {
               context: context,
               builder: ((context) {
                 //const Mode _mode = Mode.overlay;
+               
                 return Material(
                   child: Column(
                     children: <Widget>[
+                    //  SearchMapPlaceWidget(
+                    //   clearIcon: Icons.clear,
+                    //   icon: Icons.search,
+                    //   strictBounds: false,
+                    //   apiKey: googleAPIkey , 
+                    //   hasClearButton: true,
+                    //   placeType: PlaceType.address,
+                    //   placeholder: "Pickup Location",
+                    //   onSelected:(Place place)async{
+                    //     Geolocation? geolocation=await place.geolocation;
+                    //     mapController.animateCamera(
+                    //       CameraUpdate.newLatLng(geolocation?.coordinates)
+                    //     );
+                    //     mapController.animateCamera(
+                    //       CameraUpdate.newLatLngBounds(geolocation?.bounds,0)
+                    //     );
+                    //   } ,),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: TextFormField(
@@ -253,7 +243,7 @@ class _RiderState extends State<Rider> {
                                 Navigator.pushNamed(context, "drivermap");
                               },
                               child: const Text(
-                                "Find a passenger",
+                                "Find a driver",
                                 style: TextStyle(
                                   fontSize: 25,
                                   fontWeight: FontWeight.bold,

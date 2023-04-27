@@ -6,8 +6,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-// ignore: unused_import
 import 'driverlist.dart';
 
 final _firestore = FirebaseFirestore.instance;
@@ -231,7 +229,7 @@ addDataToFirestore(snameValue, saddressValue, daddressValue);
       'destinationAddress': daddressValue,
       'userId': user.uid,
     });
-     Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) =>  DriverList()));
+     Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) =>  ScheduleList()));
     Fluttertoast.showToast(
       msg: "Ride scheduled successfully!",
       toastLength: Toast.LENGTH_SHORT,

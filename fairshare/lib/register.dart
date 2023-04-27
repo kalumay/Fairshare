@@ -40,9 +40,7 @@ class _RegisterState extends State<Register> {
 
   var otpFieldVisibility = false;
   var receivedID = '';
- String userType = '';
-
-
+  String userType = '';
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +74,7 @@ class _RegisterState extends State<Register> {
                   },
                   keyboardType: TextInputType.name,
                   decoration: const InputDecoration(
-                    prefixIcon: Icon(Icons.person_add_outlined),
+                      prefixIcon: Icon(Icons.person_add_outlined),
                       border: OutlineInputBorder(),
                       hintText: 'Enter your name',
                       labelText: 'Name'),
@@ -96,7 +94,7 @@ class _RegisterState extends State<Register> {
                   },
                   keyboardType: TextInputType.phone,
                   decoration: const InputDecoration(
-                    prefixIcon: Icon(Icons.phone),
+                      prefixIcon: Icon(Icons.phone),
                       border: OutlineInputBorder(),
                       hintText: '9876543210',
                       labelText: 'Phone'),
@@ -121,23 +119,23 @@ class _RegisterState extends State<Register> {
                 ),
               ),
 
-              Row(
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pushNamedAndRemoveUntil(
-                        context,
-                        'login',
-                        (route) => false,
-                      );
-                    },
-                    child: const Text(
-                      "Already have an account?",
-                      style: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-                    ),
-                  )
-                ],
-              )
+              // Row(
+              //   children: [
+              //      TextButton(
+              //       onPressed: () {
+              //         Navigator.pushNamedAndRemoveUntil(
+              //           context,
+              //           'login',
+              //           (route) => false,
+              //         );
+              //       },
+              //       child: const Text(
+              //         "Already have an account?",
+              //         style: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+              //       ),
+              //     )
+              //   ],
+              // )
             ],
           )),
         ),
@@ -162,15 +160,14 @@ class _RegisterState extends State<Register> {
 
       Fluttertoast.showToast(msg: "Registration successful!");
       Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ridrive(),
-                    ),
-                  );
-                  final prefs = await SharedPreferences.getInstance();
+        context,
+        MaterialPageRoute(
+          builder: (context) => const ridrive(),
+        ),
+      );
+      final prefs = await SharedPreferences.getInstance();
 
-await prefs.setString('userType', userType);
-
+      await prefs.setString('userType', userType);
     } catch (e) {
       print(e.toString());
       Fluttertoast.showToast(msg: "Error registering user. Please try again.");
@@ -212,39 +209,38 @@ await prefs.setString('userType', userType);
     );
   }
 
- @override
-void initState() {
-  super.initState();
-  FirebaseAuth.instance.authStateChanges().listen((User? user) async {
-    if (user == null) {
-      print('User is currently signed out!');
-    } else {
-      // Retrieve the user's selection from persistent storage
-      final prefs = await SharedPreferences.getInstance();
-      final userType = prefs.getString('userType');
+  @override
+  void initState() {
+    super.initState();
+    FirebaseAuth.instance.authStateChanges().listen((User? user) async {
+      if (user == null) {
+        print('User is currently signed out!');
+      } else {
+        // Retrieve the user's selection from persistent storage
+        final prefs = await SharedPreferences.getInstance();
+        final userType = prefs.getString('userType');
 
-      // Navigate to the appropriate page based on the user's selection
-      switch (userType) {
-        case 'driver':
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const DriverMap()),
-          );
-          break;
-        case 'rider':
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const Rider()),
-          );
-          break;
-        default:
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const ridrive()),
-          );
+        // Navigate to the appropriate page based on the user's selection
+        switch (userType) {
+          case 'driver':
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const DriverMap()),
+            );
+            break;
+          case 'rider':
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const Rider()),
+            );
+            break;
+          default:
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const ridrive()),
+            );
+        }
       }
-    }
-  });
-}
-
+    });
+  }
 }
