@@ -233,7 +233,7 @@ addDataToFirestore(snameValue, saddressValue, daddressValue);
       'userId': user.uid,
       'time': time.toIso8601String(),
     });
-     Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) =>  ScheduleList()));
+     Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) =>  ScheduleList(accept: true,)));
     Fluttertoast.showToast(
       msg: "Ride scheduled successfully!",
       toastLength: Toast.LENGTH_SHORT,

@@ -2,6 +2,7 @@
 
 import 'dart:developer';
 
+import 'package:fairshare/driverlist.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:fairshare/map.dart';
 import 'package:fairshare/rate.dart';
@@ -15,7 +16,8 @@ import 'driverform.dart';
 FirebaseAuth _auth = FirebaseAuth.instance;
 
 class Rider extends StatefulWidget {
-  const Rider({super.key});
+  const Rider({super.key,});
+ 
 
   @override
   State<Rider> createState() => _RiderState();
@@ -28,6 +30,8 @@ class _RiderState extends State<Rider> {
   final String _selectedVehicle = 'Bike';
   final TextEditingController pickupController = TextEditingController();
   final TextEditingController destinationController = TextEditingController();
+  
+  
 
   void _onLocationSelected(LatLng _placeNameLatLng, LatLng _destinationLatLng) {
     // Calculate the distance and cost here
@@ -63,13 +67,12 @@ class _RiderState extends State<Rider> {
                       _pickup!.latitude,
                       _pickup!.longitude,
                     ),
-                     destination: _destination == null
+              destination: _destination == null
                   ? const google.LatLng(0, 0)
                   : google.LatLng(
                       _destination!.latitude,
                       _destination!.longitude,
                     ),
-                    
             ),
           ],
         ),
@@ -118,14 +121,21 @@ class _RiderState extends State<Rider> {
             ),
             ListTile(
               title: const Text(
-                "Driver list",
+                "Schedule List",
                 style: TextStyle(
                   fontSize: 20,
                 ),
               ),
-              leading: const Icon(Icons.list_alt),
-              onTap: () {},
+              leading: const Icon(Icons.list),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>  ScheduleList(accept: true,)));
+              },
             ),
+          
             ListTile(
               title: const Text(
                 "Logout",
@@ -173,135 +183,90 @@ class _RiderState extends State<Rider> {
         onPressed: () {
           showModalBottomSheet(
               context: context,
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(200.0),
+                  topRight: Radius.circular(200.0),
+                ),
+              ),
               builder: ((context) {
                 //const Mode _mode = Mode.overlay;
 
                 return Material(
-                  child: Column(
-                    children: <Widget>[
-                      OpenMapPicker(
-                        key: const ValueKey('pickup'),
-                        decoration:
-                            const InputDecoration(hintText: "My location"),
-                        onChanged: (FormattedLocation? newValue) {
-                          /// save new value
-                          log('got new value $newValue');
-                          _pickup = LatLng(newValue!.lat, newValue.lon);
-                        },
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20.0),
+                        topRight: Radius.circular(20.0),
                       ),
-                      // Padding(
-                      //   padding: const EdgeInsets.all(8.0),
-//                         child: TextFormField(
-//                           controller: pickupController,
-//                             decoration: InputDecoration(
-//                           hintText: " location ",
-//                           labelText: " Your location",
-//                           border: OutlineInputBorder(
-//                             borderRadius: BorderRadius.circular(10.0),
-//                           ),
-//                           suffixIcon: IconButton(
-//               icon: const Icon(Icons.search),
-//               onPressed: () {
-//                 Future<LatLng?> searchPlace(String placeName) async {
-//   try {
-//     placeName= pickupController.text;
-//     List<Location> locations = await locationFromAddress(placeName);
-//     if (locations != null && locations.isNotEmpty) {
-//       return LatLng(locations.first.latitude, locations.first.longitude);
-//     }
-//   } catch (e) {
-//     print(e);
-//   }
-//   return null;
-// }
-//               },
-//             ),
-//                         )
-//                         ),
-                      // ),
-
-//                       Padding(
-//                         padding: const EdgeInsets.all(8.0),
-//                         child: TextFormField(
-//                          // onTap: _handlePressButton,
-//                          controller: destinationController,
-//                           decoration: InputDecoration(
-//                             hintText: "Destination",
-//                             labelText: "Enter Destination",
-//                             suffixIcon: IconButton(
-//   icon: const Icon(Icons.search),
-//   onPressed: () async {
-//     try {
-//       final String placeName = pickupController.text;
-//       final List<Location> locations = await locationFromAddress(placeName);
-//       if (locations.isNotEmpty) {
-//         final LatLng latLng = LatLng(locations.first.latitude, locations.first.longitude);
-//         setState(() {
-//   _pickup = latLng;
-// });
-
-//       } else {
-//         // Handle case when no locations are found
-//       }
-//     } catch (e) {
-//       print(e);
-//     }
-//   },
-// ),
-//                             border: OutlineInputBorder(
-//                               borderRadius: BorderRadius.circular(10.0),
-//                             ),
-//                           ),
-//                         ),
-//                       ),
-                      OpenMapPicker(
-                        key: const ValueKey('destination'),
-                        decoration:
-                            const InputDecoration(hintText: "Destination"),
-                        onChanged: (FormattedLocation? newValue) {
-                          /// save new value
-                          log('got new value $newValue');
-                          _destination = LatLng(newValue!.lat, newValue.lon);
-                        },
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            hintText: "price",
-                            labelText: " Offer your fare price",
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    height: MediaQuery.of(context).size.height * 0.4,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: <Widget>[
+                           Container(
+            width: 200.0,
+            height: 4.0,
+            color: Colors.grey,
+            margin: const EdgeInsets.only(top: 16.0, bottom: 16.0),
+          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: OpenMapPicker(
+                              key: const ValueKey('pickup'),
+                              decoration: const InputDecoration(
+                                hintText: "My location",
+                                border: OutlineInputBorder(),
+                              ),
+                              onChanged: (FormattedLocation? newValue) {
+                                /// save new value
+                                log('got new value $newValue');
+                                _pickup = LatLng(newValue!.lat, newValue.lon);
+                              },
                             ),
                           ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 50.0,
-                      ),
-                      Column(
-                        children: [
-                          ElevatedButton(
-                              style: TextButton.styleFrom(
-                                  minimumSize: const Size(30, 50)),
-                              onPressed: () {
-                                // _storeData(userId);
-                                setState(() {
-                                  
-                                });
-
-                                Navigator.of(context).pop();
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: OpenMapPicker(
+                              key: const ValueKey('destination'),
+                              decoration: const InputDecoration(
+                                hintText: "Destination",
+                                border: OutlineInputBorder( ),
+                              ),
+                              onChanged: (FormattedLocation? newValue) {
+                                /// save new value
+                                log('got new value $newValue');
+                                _destination =
+                                    LatLng(newValue!.lat, newValue.lon);
                               },
-                              child: const Text(
-                                "Find a driver",
-                                style: TextStyle(
-                                  fontSize: 25,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              )),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 50.0,
+                          ),
+                          Column(
+                            children: [
+                              ElevatedButton(
+                                  style: TextButton.styleFrom(
+                                      minimumSize: const Size(30, 50)),
+                                  onPressed: () {
+                                    // _storeData(userId);
+                                    setState(() {});
+
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text(
+                                    "Find a driver",
+                                    style: TextStyle(
+                                      fontSize: 25,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  )),
+                            ],
+                          ),
                         ],
                       ),
-                    ],
+                    ),
                   ),
                 );
                 // ignore: dead_code

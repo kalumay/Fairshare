@@ -79,11 +79,7 @@ class _HomesState extends State<Homes> {
           ),
         ],
       ),
-      body: isLoading
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-          : Container(
+      body: Container(
               padding: const EdgeInsets.all(20),
               child: Column(
                 children: [

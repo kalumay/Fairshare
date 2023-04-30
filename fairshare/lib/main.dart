@@ -4,7 +4,6 @@ import 'package:fairshare/drivermap.dart';
 import 'package:fairshare/errorpage.dart';
 import 'package:fairshare/home.dart';
 import 'package:fairshare/login.dart';
-import 'package:fairshare/map.dart';
 import 'package:fairshare/rate.dart';
 import 'package:fairshare/Schedule.dart';
 import 'package:fairshare/ridrive.dart';
@@ -89,7 +88,7 @@ if (_permissionGranted == PermissionStatus.denied) {
         'driver':(context) => DriverForm(key: UniqueKey()),
         'rate':(context) => const Rate(),
         'drivermap':(context) => const DriverMap(),
-        'schedulelist':(context) => ScheduleList(),
+        'schedulelist':(context) =>  ScheduleList(accept: true,),
         'homes':(context) => Homes(userId: user!.uid),
         'search':(context) => Searches(onSearch: onSearch)
       },

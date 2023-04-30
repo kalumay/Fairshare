@@ -1,13 +1,9 @@
-import 'dart:developer';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:latlong2/latlong.dart' as lat;
-import 'package:location/location.dart';
-import 'rider.dart';
-import 'package:geocoding/geocoding.dart';
+
 
 class MapSample extends StatefulWidget {
   final LatLng pickup;
@@ -63,11 +59,11 @@ class _MapSampleState extends State<MapSample> {
 
       getPolyPoints();
 
-      Future.delayed(Duration(milliseconds: 500), () {
+      Future.delayed(const Duration(milliseconds: 500), () {
         showDialog(
           context: context,
           builder: (context) {
-            final distance = lat.Distance();
+            final distance = const lat.Distance();
 
             // km = 423
             final km = distance.as(
@@ -76,10 +72,29 @@ class _MapSampleState extends State<MapSample> {
               lat.LatLng(
                   widget.destination.latitude, widget.destination.longitude),
             );
+            double calculateFarePrice(double distance) {
+  // Define your pricing scheme here
+  // For example, you could charge $1 per kilometer
+  return distance * 100;
+}
+final fare = calculateFarePrice(km);
 
             return AlertDialog(
-              title: const Text('Distance'),
-              content: Text('${km}km'),
+              title: const Text('Ride Details'),
+              contentPadding: const EdgeInsets.all(16.0),
+              content: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Text('Distance: ${km}km'),
+                    Text("Fare: Rs $fare"),
+                    ElevatedButton(onPressed: (){
+                       Navigator.of(context).pop();
+                      //passenger list function
+                    }, 
+                    child: const Text('Confirm Booking'),)
+                  ],
+                ),
+              ),
             );
           });
       });

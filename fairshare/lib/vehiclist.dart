@@ -1,253 +1,160 @@
-// // ignore_for_file: no_leading_underscores_for_local_identifiers, prefer_typing_uninitialized_variables, prefer_const_literals_to_create_immutables, avoid_print, avoid_types_as_parameter_names, unused_field
+// ignore_for_file: avoid_print, unused_field, unused_local_variable
 
-// import 'package:fairshare/home.dart';
-// import 'package:fairshare/rider.dart';
-// import 'package:fairshare/trylocation.dart';
-// import 'package:google_maps_flutter/google_maps_flutter.dart';
-// import 'package:fairshare/map.dart';
-// import 'package:fairshare/rate.dart';
-// import 'package:fairshare/Schedule.dart';
-// import 'package:flutter/material.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fairshare/driverlist.dart';
+import 'package:fairshare/map.dart';
+import 'package:fairshare/rider.dart';
+import 'package:fairshare/schedule.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart' as google;
+//import 'package:fairshare/rider.dart';
 
-// FirebaseAuth _auth = FirebaseAuth.instance;
+class PassengerList extends StatefulWidget {
+  // final Function(bool) accept;
+  const PassengerList({Key? key}) : super(key: key);
 
-// class DriverMap extends StatefulWidget {
-//   const DriverMap({super.key});
+  @override
+  State<PassengerList> createState() => _PassengerListState();
+}
 
-//   @override
-//   State<DriverMap> createState() => _DriverMapState();
-// }
+class _PassengerListState extends State<PassengerList> {
+  List<Map<String, dynamic>> dataList = [];
 
-// class _DriverMapState extends State<DriverMap> {
-  
-//   String referenceId = "";
-//   final String _selectedVehicle = 'Bike';
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  LatLng? _pickup;
 
-//   late GoogleMapController mapController;
-//   @override
-//   Widget build(BuildContext context) {
-    
-//     //var _onLocationSelected;
-//     return Scaffold(
-//       appBar: AppBar(title: const Text('Driver')),
-//       // ignore: prefer_const_constructors
-//       body:   Center(
-//       child: Stack(
-       
-//           children:   [MapSample
-          
-//           (onLocationSelected: (_pickupLatLng ,_destinationLatLng ) {  },), 
-        
-//           ],
-//       ),
-//     ),
-    
-//       drawer: Drawer(
-//         child: Column(
-//           children: <Widget>[
-//             Container(
-//               color: Theme.of(context).primaryColor,
-//               width: double.infinity,
-//               child: Column(
-//                 children: const <Widget>[
-//                   SizedBox(
-//                     width: 100,
-//                     height: 150,
-//                   ),
-            
-               
-//                 ],
-//               ),
-//             ),
-//              ListTile(
-//               title: const Text(
-//                 "Home",
-//                 style: TextStyle(
-//                   fontSize: 20,
-//                 ),
-//               ),
-//               leading: const Icon(Icons.home),
-//               onTap: () {
-//                 Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) =>  const Homes(userId: '',)));
-//                 },
-//             ),
-           
-//             ListTile(
-//               title: const Text(
-//                 "Schedule",
-//                 style: TextStyle(
-//                   fontSize: 20,
-//                 ),
-//               ),
-//               leading: const Icon(Icons.settings),
-//               onTap: () {
-//                 Navigator.of(context).pop();
-//                 Navigator.push(context,
-//                     MaterialPageRoute(builder: (context) =>  const ScheduleRide()));
-//               },
-//             ),
-          
-//             ListTile(
-//               title: const Text(
-//                 "Driver list",
-//                 style: TextStyle(
-//                   fontSize: 20,
-//                 ),
-//               ),
-//               leading: const Icon(Icons.list_alt),
-//               onTap: () {
-//                 // Navigator.of(context).pop();
-//                 // Navigator.push(context,
-//                 //     MaterialPageRoute(builder: (context) => const Rate()));
-//               },
-//             ), 
-//              ListTile(
-//               title: const Text(
-//                 "Logout",
-//                 style: TextStyle(
-//                   fontSize: 20,
-//                 ),
-//               ),
-//               leading: const Icon(Icons.logout),
-//               onTap: () async {
-//                  await _auth.signOut();
-//             // ignore: use_build_context_synchronously
-//              Navigator.pushReplacementNamed(context, 'phone');
-//           },
-//             ),
-//             ListTile(
-//               title: const Text(
-//                 "Rate this app",
-//                 style: TextStyle(
-//                   fontSize: 20,
-//                 ),
-//               ),
-//               leading: const Icon(Icons.settings),
-//               onTap: () {
-//                 Navigator.of(context).pop();
-//                 Navigator.push(context,
-//                     MaterialPageRoute(builder: (context) => const Rate()));
-//               },
-//             ),
+  LatLng? _destination;
+ 
+  // Retrieve the data
+Future<List<Map<String, dynamic>>> retrieveData() async {
+  try {
+    final QuerySnapshot querySnapshot =
+        await _firestore.collection('Rides').get();
 
-//              ElevatedButton(
-//                         onPressed: () {
-//                         Navigator.push(context,
-//                     MaterialPageRoute(builder: (context) => const Rider()));
-//                         },
-//                         child: const Text('Passenger Mode'),
-//                       ),
-//           ],
-//         ),
-//       ),
-//        floatingActionButton: FloatingActionButton.extended(
-//   onPressed: () {
-//    showModalBottomSheet(
-//               context: context,
-//               builder: ((context) {
-//                 //const Mode _mode = Mode.overlay;
-               
-//                 return Material(
-//                   child: Column(
-//                     children: <Widget>[
-                    
-//                       Padding(
-//                         padding: const EdgeInsets.all(8.0),
-//                         child: TextFormField(
-//                             decoration: InputDecoration(
-//                           hintText: " location ",
-//                           labelText: " Your location",
-//                           border: OutlineInputBorder(
-//                             borderRadius: BorderRadius.circular(10.0),
-//                           ),
-//                         )),
-//                       ),
-                        
-//                       Padding(
-//                         padding: const EdgeInsets.all(8.0),
-//                         child: TextFormField(
-//                          // onTap: _handlePressButton,
-//                           decoration: InputDecoration(
-//                             hintText: "Destination",
-//                             labelText: "Enter Destination",
-//                             border: OutlineInputBorder(
-//                               borderRadius: BorderRadius.circular(10.0),
-//                             ),
-//                           ),
-//                         ),
-//                       ),
-//                       Padding(
-//                         padding: const EdgeInsets.all(8.0),
-//                         child: TextFormField(
-//                           decoration: InputDecoration(
-//                             hintText: "price",
-//                             labelText: " Offer your fare price",
-//                             border: OutlineInputBorder(
-//                               borderRadius: BorderRadius.circular(10.0),
-//                             ),
-//                           ),
-//                         ),
-//                       ),
-//                       const SizedBox(
-//                         height: 50.0,
-//                       ),
-//                       Column(
-//                         children: [
-//                           ElevatedButton(
-//                               style: TextButton.styleFrom(
-//                                   minimumSize: const Size(30, 50)),
-//                               onPressed: () {
-//                                 // _storeData(userId);
-//                                 Navigator.pushNamed(context, "drivermap");
-//                               },
-//                               child: const Text(
-//                                 "Find a Passenger",
-//                                 style: TextStyle(
-//                                   fontSize: 25,
-//                                   fontWeight: FontWeight.bold,
-//                                 ),
-//                               )
-//                               ),
-//                               // ignore: non_constant_identifier_names
-//                             TextButton(
-//   onPressed: () {
-//     Navigator.push(
-//       context,
-//       MaterialPageRoute(
-//         builder: (context) => Searches(
-//           onSearch: (query) {
-//             // handle search query
-//           },
-//         ),
-//       ),
-//     );
-//   },
-//   child: const Text('Search'),
-// )
+    // Assign retrieved data to existing variable instead of redeclaring it
+List<Map<String, dynamic>> dataList = querySnapshot.docs.map((doc) {
+  final data = doc.data() as Map<String, dynamic>;
+  data['documentId'] = doc.id;
+  return data;
+}).toList();
 
-//                         ],
-//                       ),
-//                     ],
-//                   ),
-//                 );
-//                 // ignore: dead_code
-//                 SizedBox(
-//                   height: 400,
-//                   child: Center(
-//                     child: ElevatedButton(
-//                       child: const Text('close'),
-//                       onPressed: () {
-//                         Navigator.pop(context);
-//                       },
-//                     ),
-//                   ),
-//                 );
-//               }));
-//   },
-//   label: const Text('Search for driver'),
-//   icon: const Icon(Icons.search),
-// ),
-//     );
-//   }
-// }
+
+
+
+    return dataList;
+  } catch (e) {
+    print('Error retrieving data: $e');
+    return [];
+  }
+}
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Passenger List"),
+      ),
+      body: SafeArea(
+        child: dataList.isEmpty
+            ? const Center(child: CircularProgressIndicator())
+            :ListView.builder(
+          itemCount: dataList.length,
+          itemBuilder: (BuildContext context, int index) {
+            if (index >= dataList.length) {
+              return null; // Return null if the index is out of range
+            }
+
+            final data = dataList[index];
+            //final scheduleName = data['scheduleName'] ?? '';
+            final startAddress = data['startingAddress'] ?? 'No start address provided';
+            final destination = data['destinationAddress'] ?? 'No destination address provided';
+            final time = DateTime.parse(data['time']);
+            final dateFormatted = DateFormat.yMd().format(time);
+            final timeFormatted = DateFormat.jm().format(time);
+
+            return SingleChildScrollView(
+              child: ListTile(
+                // title: Text(
+                //   scheduleName,
+                //   style: const TextStyle(fontSize: 25),
+                // ),
+                title: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    //Text('Schedule Name: ${data['scheduleName']}'),
+                    Text('Start Address: ${data['startingAddress']}'),
+                    Text('Destination: ${data['destinationAddress']}'),
+                    Text('Date: $dateFormatted'),
+                    Text('Time: $timeFormatted'),
+                    // add more relevant data to display here if needed
+                  ],
+                ),
+                trailing: Wrap(
+                  spacing: 12,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        // Navigator.pushReplacement(
+                        //     context,
+                        //     MaterialPageRoute(
+                        //         builder: (context) =>  MapSample( pickup: _pickup == null
+                        //                         ? const google.LatLng(0, 0)
+                        //                         : google.LatLng(
+                        //                             _pickup!.latitude,
+                        //                             _pickup!.longitude,
+                        //                           ),
+                        //                     destination: _destination == null
+                        //                         ? const google.LatLng(0, 0)
+                        //                         : google.LatLng(
+                        //                             _destination!.latitude,
+                        //                             _destination!.longitude,
+                        //                           ),)
+                        //         ),);
+                                 //accept(true);
+                      },
+                      child: const Text('Accept'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        final data = dataList[index];
+                        final documentId = data['documentId'];
+                        // await _firestore
+                        //     .collection('Rides')
+                        //     .doc(documentId)
+                        //     .delete(); // delete document from Firestore
+                        dataList.removeAt(index); // remove item from list
+                        setState(() {});
+                      },
+                      child: const Text('Decline'),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+      // floatingActionButton: ElevatedButton(
+      //   onPressed: () {
+      //     Navigator.pushNamed(context, "schedule");
+      //   },
+      //   child: const Text('Add'),
+      // ),
+      // floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    retrieveData().then((value) {
+      setState(() {
+        dataList = value;
+      });
+    });
+  }
+}

@@ -154,7 +154,7 @@ class _RegisterState extends State<Register> {
     try {
       await FirebaseFirestore.instance.collection('passengerInfo').doc().set({
         'name': name.text,
-        'phone': phoneNumber.text,
+        'phone': phoneNumber.text.trim(),
       });
 
       Fluttertoast.showToast(msg: "Registration successful!");
@@ -178,14 +178,25 @@ class _RegisterState extends State<Register> {
       phoneNumber: '+977 ${phoneNumber.text}',
       verificationCompleted: (PhoneAuthCredential credential) async {
         await auth.signInWithCredential(credential).then(
-          (value) {
+          (value) async {
             print('Logged In Successfully');
             Fluttertoast.showToast(msg: "Logged In Successfully");
             final user = value.user;
             if (user == null) {
               return;
             }
-            _storeData(user.uid);
+
+            final userDoc = await firestore
+                .collection('passengerInfo')
+                .where(
+                  'phone',
+                  isEqualTo: phoneNumber.text.trim(),
+                )
+                .get();
+
+            if (userDoc.docs.isEmpty) {
+              _storeData(user.uid);
+            }
           },
         );
         validateform();
