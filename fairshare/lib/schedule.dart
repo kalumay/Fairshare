@@ -191,12 +191,14 @@ String? _selectedDuration = '1 month';
   String snameValue = sname.text;
   String saddressValue = saddress.text;
   String daddressValue = daddress.text;
+  final time = DateTime(_date.year, _date.month, _date.day, _time.hour, _time.minute);
 addDataToFirestore(snameValue, saddressValue, daddressValue);
   // Store the entered values in a map
   Map<String, String> rideDetails = {
     'schedule_name': snameValue,
     'start_address': saddressValue,
     'destination_address': daddressValue,
+    'time': time.toIso8601String(),
   };
 
   // Print the ride details to the console for debugging purposes
@@ -223,11 +225,13 @@ addDataToFirestore(snameValue, saddressValue, daddressValue);
   }
 
   try {
+    final time = DateTime(_date.year, _date.month, _date.day, _time.hour, _time.minute);
     await _firestore.collection('Rides').add({
       'scheduleName': snameValue,
       'startingAddress': saddressValue,
       'destinationAddress': daddressValue,
       'userId': user.uid,
+      'time': time.toIso8601String(),
     });
      Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) =>  ScheduleList()));
     Fluttertoast.showToast(
