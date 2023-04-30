@@ -18,7 +18,7 @@
 
 // class MapSampleState extends State<MapSample> {
 //   final Completer<GoogleMapController> _controller = Completer();
-//   LatLng? _pickupLatLng;
+//   LatLng? widget.pickupLatLng;
 //   LatLng? _destinationLatLng;
 // List<LatLng> polylineCoordinates=[];
 // String googleAPIkey = "AIzaSyC1e1LEMoEjOqMBF7QiGYMQa6gfwXdGkTk";
@@ -29,8 +29,8 @@
 //    void getPolyPoints() async{
 //     PolylinePoints polylinePoints= PolylinePoints();
 //     PolylineResult result= await polylinePoints.getRouteBetweenCoordinates(
-//       googleAPIkey, 
-//       PointLatLng(_pickupLatLng!.latitude, _pickupLatLng!.longitude), 
+//       googleAPIkey,
+//       PointLatLng(widget.pickupLatLng!.latitude, widget.pickupLatLng!.longitude),
 //       PointLatLng(_destinationLatLng!.latitude, _destinationLatLng!.longitude)
 //   );
 //    if(result.points.isNotEmpty){
@@ -39,35 +39,35 @@
 //           LatLng(point.latitude, point.longitude));
 //     }
 //     setState(() {
-      
+
 //     });
 //    } }
 
-//   Future<void> getCurrentLocation() async {
-//     Location location = Location();
-//     bool _serviceEnabled;
-//     PermissionStatus _permissionGranted;
-//     LocationData _locationData;
+// Future<void> getCurrentLocation() async {
+//   Location location = Location();
+//   bool _serviceEnabled;
+//   PermissionStatus _permissionGranted;
+//   LocationData _locationData;
 
-//     _serviceEnabled = await location.serviceEnabled();
+//   _serviceEnabled = await location.serviceEnabled();
+//   if (!_serviceEnabled) {
+//     _serviceEnabled = await location.requestService();
 //     if (!_serviceEnabled) {
-//       _serviceEnabled = await location.requestService();
-//       if (!_serviceEnabled) {
-//         return;
-//       }
+//       return;
 //     }
-//     _permissionGranted = await location.hasPermission();
-//     if (_permissionGranted == PermissionStatus.denied) {
-//       _permissionGranted = await location.requestPermission();
-//       if (_permissionGranted != PermissionStatus.granted) {
-//         return;
-//       }
-//     }
-//     _locationData = await location.getLocation();
-//     _pickupLatLng = LatLng(_locationData.latitude!, _locationData.longitude!);
-//     _kGooglePlex = CameraPosition(target: _pickupLatLng!, zoom: 14.4746,);
-//     setState(() {});
 //   }
+//   _permissionGranted = await location.hasPermission();
+//   if (_permissionGranted == PermissionStatus.denied) {
+//     _permissionGranted = await location.requestPermission();
+//     if (_permissionGranted != PermissionStatus.granted) {
+//       return;
+//     }
+//   }
+//   _locationData = await location.getLocation();
+//   widget.pickupLatLng = LatLng(_locationData.latitude!, _locationData.longitude!);
+//   _kGooglePlex = CameraPosition(target: widget.pickupLatLng!, zoom: 14.4746,);
+//   setState(() {});
+// }
 
 //   @override
 //   void initState() {
@@ -76,28 +76,28 @@
 //     getCurrentLocation();
 //   }
 // ////////////////////////////
-//   void _addMarker(LatLng position) {
-//     if (_pickupLatLng == null) {
-//       _pickupLatLng = position;
-//     } else if (_destinationLatLng == null) {
-//       _destinationLatLng = position;
-//     } else {
-//       // clear existing markers and add new pickup marker
-//       _pickupLatLng = position;
-//       _destinationLatLng = null;
-//     }
-//      if (_pickupLatLng != null && _destinationLatLng != null) {
-//     getPolyPoints();
+// void _addMarker(LatLng position) {
+//   if (widget.pickupLatLng == null) {
+//     widget.pickupLatLng = position;
+//   } else if (_destinationLatLng == null) {
+//     _destinationLatLng = position;
+//   } else {
+//     // clear existing markers and add new pickup marker
+//     widget.pickupLatLng = position;
+//     _destinationLatLng = null;
 //   }
-//     setState(() {});
-//   }
+//    if (widget.pickupLatLng != null && _destinationLatLng != null) {
+//   getPolyPoints();
+// }
+//   setState(() {});
+// }
 // ///////////////////////////////////
 // Set<Marker> _buildMarkers() {
 //     final Set<Marker> markers = {};
-//     if (_pickupLatLng != null) {
+//     if (widget.pickupLatLng != null) {
 //       markers.add(Marker(
 //         markerId: const MarkerId("pickupMarker"),
-//         position: _pickupLatLng!,
+//         position: widget.pickupLatLng!,
 //         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
 //       ));
 //     }
@@ -110,8 +110,6 @@
 //     }
 //      return markers;
 //   }
-  
-
 
 //   @override
 //   Widget build(BuildContext context) {
@@ -139,17 +137,23 @@
 //     );
 //   }
 // }
+import 'dart:developer';
+
 import 'package:flutter/foundation.dart';
- import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-//import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:latlong2/latlong.dart' as lat;
+import 'package:location/location.dart';
 import 'rider.dart';
+import 'package:geocoding/geocoding.dart';
 
 class MapSample extends StatefulWidget {
-  final Function(LatLng, LatLng) onLocationSelected;
+  final LatLng pickup;
+  final LatLng destination;
 
-  const MapSample({Key? key, required this.onLocationSelected}) : super(key: key);
+  const MapSample({Key? key, required this.pickup, required this.destination})
+      : super(key: key);
 
   @override
   State<MapSample> createState() => _MapSampleState();
@@ -158,72 +162,128 @@ class MapSample extends StatefulWidget {
 class _MapSampleState extends State<MapSample> {
   late GoogleMapController _controller;
   //final Mode _mode= Mode.overlay;
-  LatLng? _pickup;
-  LatLng? _destination;
 
   void _onMapCreated(GoogleMapController controller) {
     _controller = controller;
   }
 
-  void _onTap(LatLng latLng) {
-    if (_pickup == null) {
-      setState(() {
-        _pickup = latLng;
-      });
-    } else if (_destination == null) {
-      setState(() {
-        _destination = latLng;
-        widget.onLocationSelected(_pickup!, _destination!);
-      });
+  List<LatLng> polylineCoordinates = [];
+  void getPolyPoints() async {
+    log('Lya k vayo yah');
+    PolylinePoints polylinePoints = PolylinePoints();
+    String googleApiKey = "AIzaSyC1e1LEMoEjOqMBF7QiGYMQa6gfwXdGkTk";
+
+    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+        googleApiKey,
+        PointLatLng(widget.pickup.latitude, widget.pickup.longitude),
+        PointLatLng(widget.destination.latitude, widget.destination.longitude));
+
+    if (result.points.isNotEmpty) {
+      polylineCoordinates.clear();
+      result.points.forEach(
+        (PointLatLng point) => polylineCoordinates.add(
+          LatLng(point.latitude, point.longitude),
+        ),
+      );
+      setState(() {});
     }
   }
-// List<LatLng> polylineCoordinates=[];
-// void getPolyPoints() async{
-//   PolylinePoints polylinePoints= PolylinePoints();
-//   String googleApiKey="AIzaSyC1e1LEMoEjOqMBF7QiGYMQa6gfwXdGkTk";
-  
-//   PolylineResult result= await polylinePoints.getRouteBetweenCoordinates(
-//     googleApiKey, 
-//     PointLatLng(_pickup!.latitude,_pickup!.longitude), 
-//     PointLatLng(_destination!.latitude, _destination!.longitude));
 
-// if (result.points.isNotEmpty){
-//   result.points.forEach(
-//     (PointLatLng point) => polylineCoordinates.add(
-//       LatLng(point.latitude, point.longitude),
-//     ),
-//    );
-// }
-// }
+  // void _onTap(LatLng latLng) {
+  //   if (widget.pickup == null) {
+  //     setState(() {
+  //       widget.pickup = latLng;
+  //     });
+  //   } else if (widget.destination == null) {
+  //     setState(() {
+  //       widget.destination = latLng;
+  //       widget.onLocationSelected(widget.pickup, widget.destination);
+  //     });
+  //   }
+  //   getPolyPoints();
+  // }
+  @override
+  void initState() {
+    getPolyPoints();
+    super.initState();
+  }
+
+  @override
+  void didUpdateWidget(covariant MapSample oldWidget) {
+    // TODO: implement didUpdateWidget
+    super.didUpdateWidget(oldWidget);
+
+
+      getPolyPoints();
+
+      Future.delayed(Duration(milliseconds: 500), () {
+        showDialog(
+          context: context,
+          builder: (context) {
+            final distance = lat.Distance();
+
+            // km = 423
+            final km = distance.as(
+              lat.LengthUnit.Kilometer,
+              lat.LatLng(widget.pickup.latitude, widget.pickup.longitude),
+              lat.LatLng(
+                  widget.destination.latitude, widget.destination.longitude),
+            );
+
+            return AlertDialog(
+              title: const Text('Distance'),
+              content: Text('${km}km'),
+            );
+          });
+      });
+    
+  }
 
   @override
   Widget build(BuildContext context) {
     return GoogleMap(
+      myLocationButtonEnabled: true,
+      myLocationEnabled: true,
       onMapCreated: _onMapCreated,
-      onTap: _onTap,
-      
       initialCameraPosition: const CameraPosition(
-       target: LatLng(27.65594703211962, 85.32094949667898),
-       
+        target: LatLng(27.65594703211962, 85.32094949667898),
         zoom: 14,
       ),
       markers: {
-        if (_pickup != null) Marker(
+        Marker(
           markerId: const MarkerId('pickup'),
-          position: _pickup!,
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
+          position: widget.pickup,
+          icon:
+              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
         ),
-        if (_destination != null) Marker(
+        Marker(
           markerId: const MarkerId('destination'),
-          position: _destination!,
+          position: widget.destination,
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
         ),
+        //       else {
+        //     // clear existing markers and add new pickup marker
+        //     widget.pickupLatLng = position;
+        //     widget.destinationLatLng = null;
+        //   }
+        //    if (widget.pickupLatLng != null && _destinationLatLng != null) {
+        //   getPolyPoints();
+        // }
+        //   setState(() {});
+      },
+      polylines: {
+        Polyline(
+            polylineId: const PolylineId("route"),
+            points: (polylineCoordinates),
+            visible: true)
       },
     );
   }
+
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<GoogleMapController>('_controller', _controller));
+    properties.add(
+        DiagnosticsProperty<GoogleMapController>('_controller', _controller));
   }
 }

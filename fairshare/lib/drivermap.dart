@@ -10,7 +10,6 @@ import 'package:fairshare/Schedule.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-
 //import 'package:vehicle_renting_and_sharing/settingpage.dart';
 FirebaseAuth _auth = FirebaseAuth.instance;
 // void showPlacePicker() async {
@@ -32,7 +31,6 @@ class DriverMap extends StatefulWidget {
 }
 
 class _DriverMapState extends State<DriverMap> {
-  
   String referenceId = "";
   final String _selectedVehicle = 'Bike';
   //List<String> vehicleType=['Bike','Car'];
@@ -40,22 +38,21 @@ class _DriverMapState extends State<DriverMap> {
   late GoogleMapController mapController;
   @override
   Widget build(BuildContext context) {
-    
     //var _onLocationSelected;
     return Scaffold(
       appBar: AppBar(title: const Text('Driver')),
       // ignore: prefer_const_constructors
-      body:   Center(
-      child: Stack(
-       
-          children:   [MapSample
-          
-          (onLocationSelected: (_pickupLatLng ,_destinationLatLng ) {  },), 
-        
+      body: Center(
+        child: Stack(
+          children: [
+            const MapSample(
+              pickup: LatLng(0, 0),
+              destination: LatLng(0, 0),
+            ),
           ],
+        ),
       ),
-    ),
-    
+
       drawer: Drawer(
         child: Column(
           children: <Widget>[
@@ -68,13 +65,12 @@ class _DriverMapState extends State<DriverMap> {
                     width: 100,
                     height: 150,
                   ),
-                // Text("Hello DriverMap!!",style: TextStyle(fontSize: 20),
-                // textAlign: TextAlign.left,),
-               
+                  // Text("Hello DriverMap!!",style: TextStyle(fontSize: 20),
+                  // textAlign: TextAlign.left,),
                 ],
               ),
             ),
-             ListTile(
+            ListTile(
               title: const Text(
                 "Home",
                 style: TextStyle(
@@ -83,8 +79,13 @@ class _DriverMapState extends State<DriverMap> {
               ),
               leading: const Icon(Icons.home),
               onTap: () {
-                Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) =>  const Homes(userId: '',)));
-                },
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const Homes(
+                              userId: '',
+                            )));
+              },
             ),
             // const ListTile(
             //   title: Text(
@@ -106,8 +107,10 @@ class _DriverMapState extends State<DriverMap> {
               leading: const Icon(Icons.settings),
               onTap: () {
                 Navigator.of(context).pop();
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) =>  const ScheduleRide()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ScheduleRide()));
               },
             ),
             //  Row(
@@ -141,8 +144,8 @@ class _DriverMapState extends State<DriverMap> {
                 // Navigator.push(context,
                 //     MaterialPageRoute(builder: (context) => const Rate()));
               },
-            ), 
-             ListTile(
+            ),
+            ListTile(
               title: const Text(
                 "Logout",
                 style: TextStyle(
@@ -151,10 +154,10 @@ class _DriverMapState extends State<DriverMap> {
               ),
               leading: const Icon(Icons.logout),
               onTap: () async {
-                 await _auth.signOut();
-            // ignore: use_build_context_synchronously
-             Navigator.pushReplacementNamed(context, 'phone');
-          },
+                await _auth.signOut();
+                // ignore: use_build_context_synchronously
+                Navigator.pushReplacementNamed(context, 'phone');
+              },
             ),
             ListTile(
               title: const Text(
@@ -171,43 +174,43 @@ class _DriverMapState extends State<DriverMap> {
               },
             ),
 
-             ElevatedButton(
-                        onPressed: () {
-                        Navigator.push(context,
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(context,
                     MaterialPageRoute(builder: (context) => const Rider()));
-                        },
-                        child: const Text('Passenger Mode'),
-                      ),
+              },
+              child: const Text('Passenger Mode'),
+            ),
           ],
         ),
       ),
-       floatingActionButton: FloatingActionButton.extended(
-  onPressed: () {
-   showModalBottomSheet(
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          showModalBottomSheet(
               context: context,
               builder: ((context) {
                 //const Mode _mode = Mode.overlay;
-               
+
                 return Material(
                   child: Column(
                     children: <Widget>[
-                    //  SearchMapPlaceWidget(
-                    //   clearIcon: Icons.clear,
-                    //   icon: Icons.search,
-                    //   strictBounds: false,
-                    //   apiKey: googleAPIkey , 
-                    //   hasClearButton: true,
-                    //   placeType: PlaceType.address,
-                    //   placeholder: "Pickup Location",
-                    //   onSelected:(Place place)async{
-                    //     Geolocation? geolocation=await place.geolocation;
-                    //     mapController.animateCamera(
-                    //       CameraUpdate.newLatLng(geolocation?.coordinates)
-                    //     );
-                    //     mapController.animateCamera(
-                    //       CameraUpdate.newLatLngBounds(geolocation?.bounds,0)
-                    //     );
-                    //   } ,),
+                      //  SearchMapPlaceWidget(
+                      //   clearIcon: Icons.clear,
+                      //   icon: Icons.search,
+                      //   strictBounds: false,
+                      //   apiKey: googleAPIkey ,
+                      //   hasClearButton: true,
+                      //   placeType: PlaceType.address,
+                      //   placeholder: "Pickup Location",
+                      //   onSelected:(Place place)async{
+                      //     Geolocation? geolocation=await place.geolocation;
+                      //     mapController.animateCamera(
+                      //       CameraUpdate.newLatLng(geolocation?.coordinates)
+                      //     );
+                      //     mapController.animateCamera(
+                      //       CameraUpdate.newLatLngBounds(geolocation?.bounds,0)
+                      //     );
+                      //   } ,),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: TextFormField(
@@ -219,19 +222,19 @@ class _DriverMapState extends State<DriverMap> {
                           ),
                         )),
                       ),
-                        // Expanded(
-                        //   child: 
-                        //   ListView.builder(
-                        //     shrinkWrap: true,
-                        //   itemCount: placePredictions.length,
-                        //   itemBuilder: (context,index)=> LocationListTile(
-                        //     press:(){},
-                        //     location: placePredictions[index].description!,
-                        //   )),),
+                      // Expanded(
+                      //   child:
+                      //   ListView.builder(
+                      //     shrinkWrap: true,
+                      //   itemCount: placePredictions.length,
+                      //   itemBuilder: (context,index)=> LocationListTile(
+                      //     press:(){},
+                      //     location: placePredictions[index].description!,
+                      //   )),),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: TextFormField(
-                         // onTap: _handlePressButton,
+                          // onTap: _handlePressButton,
                           decoration: InputDecoration(
                             hintText: "Destination",
                             labelText: "Enter Destination",
@@ -271,25 +274,23 @@ class _DriverMapState extends State<DriverMap> {
                                   fontSize: 25,
                                   fontWeight: FontWeight.bold,
                                 ),
-                              )
-                              ),
-                              // ignore: non_constant_identifier_names
-                            TextButton(
-  onPressed: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Searches(
-          onSearch: (query) {
-            // handle search query
-          },
-        ),
-      ),
-    );
-  },
-  child: const Text('Search'),
-)
-
+                              )),
+                          // ignore: non_constant_identifier_names
+                          TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => Searches(
+                                    onSearch: (query) {
+                                      // handle search query
+                                    },
+                                  ),
+                                ),
+                              );
+                            },
+                            child: const Text('Search'),
+                          )
                         ],
                       ),
                     ],
@@ -308,10 +309,10 @@ class _DriverMapState extends State<DriverMap> {
                   ),
                 );
               }));
-  },
-  label: const Text('Search for driver'),
-  icon: const Icon(Icons.search),
-),
+        },
+        label: const Text('Search for driver'),
+        icon: const Icon(Icons.search),
+      ),
     );
   }
 }

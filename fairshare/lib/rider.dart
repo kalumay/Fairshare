@@ -1,26 +1,19 @@
-// ignore_for_file: no_leading_underscores_for_local_identifiers, prefer_typing_uninitialized_variables, prefer_const_literals_to_create_immutables, avoid_print, unused_field
+// ignore_for_file: no_leading_underscores_for_local_identifiers, prefer_typing_uninitialized_variables, prefer_const_literals_to_create_immutables, avoid_print, unused_field, unnecessary_null_comparison, unused_element
 
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'dart:developer';
+
+import 'package:geocoding/geocoding.dart';
 import 'package:fairshare/map.dart';
 import 'package:fairshare/rate.dart';
 import 'package:fairshare/Schedule.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart' as google;
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:open_location_picker/open_location_picker.dart';
 import 'driverform.dart';
 
-//import 'package:vehicle_renting_and_sharing/settingpage.dart';
 FirebaseAuth _auth = FirebaseAuth.instance;
-// void showPlacePicker() async {
-//     var customLocation;
-//     LocationResult result = await Navigator.of(context).push(MaterialPageRoute(
-//         builder: (context) =>
-//             PlacePicker("YOUR API KEY",
-//                         displayLocation: customLocation,
-//                         )));
 
-//     // Handle the result in your way
-//     print(result);
-// }
 class Rider extends StatefulWidget {
   const Rider({super.key});
 
@@ -29,28 +22,59 @@ class Rider extends StatefulWidget {
 }
 
 class _RiderState extends State<Rider> {
-  
+  String placeName = '';
+
   String referenceId = "";
   final String _selectedVehicle = 'Bike';
-  late GoogleMapController mapController;
+  final TextEditingController pickupController = TextEditingController();
+  final TextEditingController destinationController = TextEditingController();
+
+  void _onLocationSelected(LatLng _placeNameLatLng, LatLng _destinationLatLng) {
+    // Calculate the distance and cost here
+  }
+
+  Future<LatLng?> searchPlace(String placeName) async {
+    try {
+      final List<Location> locations = await locationFromAddress(placeName);
+      if (locations.isNotEmpty) {
+        return LatLng(locations.first.latitude, locations.first.longitude);
+      }
+    } catch (e) {
+      print(e);
+    }
+    return null;
+  }
+
+  LatLng? _pickup;
+
+  LatLng? _destination;
   @override
   Widget build(BuildContext context) {
-    
-
     return Scaffold(
       appBar: AppBar(title: const Text('Passenger')),
       // ignore: prefer_const_constructors
-      body:   Center(
-      child: Stack(
-       
-          children:   [MapSample
-          
-          (onLocationSelected: (_pickupLatLng ,_destinationLatLng ) {  },), 
-        
+      body: Center(
+        child: Stack(
+          children: [
+            MapSample(
+              pickup: _pickup == null
+                  ? const google.LatLng(0, 0)
+                  : google.LatLng(
+                      _pickup!.latitude,
+                      _pickup!.longitude,
+                    ),
+                     destination: _destination == null
+                  ? const google.LatLng(0, 0)
+                  : google.LatLng(
+                      _destination!.latitude,
+                      _destination!.longitude,
+                    ),
+                    
+            ),
           ],
+        ),
       ),
-    ),
-    
+
       drawer: Drawer(
         child: Column(
           children: <Widget>[
@@ -63,9 +87,6 @@ class _RiderState extends State<Rider> {
                     width: 100,
                     height: 150,
                   ),
-                // Text("Hello Rider!!",style: TextStyle(fontSize: 20),
-                // textAlign: TextAlign.left,),
-               
                 ],
               ),
             ),
@@ -79,16 +100,6 @@ class _RiderState extends State<Rider> {
               leading: Icon(Icons.home),
               onTap: null,
             ),
-            // const ListTile(
-            //   title: Text(
-            //     "Travel history",
-            //     style: TextStyle(
-            //       fontSize: 20,
-            //     ),
-            //   ),
-            //   leading: Icon(Icons.lock_clock_rounded),
-            //   onTap: null,
-            // ),
             ListTile(
               title: const Text(
                 "Schedule",
@@ -99,8 +110,10 @@ class _RiderState extends State<Rider> {
               leading: const Icon(Icons.settings),
               onTap: () {
                 Navigator.of(context).pop();
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) =>  const ScheduleRide()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ScheduleRide()));
               },
             ),
             ListTile(
@@ -111,13 +124,9 @@ class _RiderState extends State<Rider> {
                 ),
               ),
               leading: const Icon(Icons.list_alt),
-              onTap: () {
-                // Navigator.of(context).pop();
-                // Navigator.push(context,
-                //     MaterialPageRoute(builder: (context) => const Rate()));
-              },
-            ), 
-             ListTile(
+              onTap: () {},
+            ),
+            ListTile(
               title: const Text(
                 "Logout",
                 style: TextStyle(
@@ -126,10 +135,10 @@ class _RiderState extends State<Rider> {
               ),
               leading: const Icon(Icons.logout),
               onTap: () async {
-                 await _auth.signOut();
-            // ignore: use_build_context_synchronously
-             Navigator.pushReplacementNamed(context, 'phone');
-          },
+                await _auth.signOut();
+                // ignore: use_build_context_synchronously
+                Navigator.pushReplacementNamed(context, 'phone');
+              },
             ),
             ListTile(
               title: const Text(
@@ -145,78 +154,115 @@ class _RiderState extends State<Rider> {
                     MaterialPageRoute(builder: (context) => const Rate()));
               },
             ),
-
-             ElevatedButton(
-                        onPressed: () {
-                        Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) =>  DriverForm(key: UniqueKey(),)),
-            );
-                        },
-                        child: const Text('Driver Mode'),
-                      ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => DriverForm(
+                            key: UniqueKey(),
+                          )),
+                );
+              },
+              child: const Text('Driver Mode'),
+            ),
           ],
         ),
       ),
-       floatingActionButton: FloatingActionButton.extended(
-  onPressed: () {
-   showModalBottomSheet(
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          showModalBottomSheet(
               context: context,
               builder: ((context) {
                 //const Mode _mode = Mode.overlay;
-               
+
                 return Material(
                   child: Column(
                     children: <Widget>[
-                    //  SearchMapPlaceWidget(
-                    //   clearIcon: Icons.clear,
-                    //   icon: Icons.search,
-                    //   strictBounds: false,
-                    //   apiKey: googleAPIkey , 
-                    //   hasClearButton: true,
-                    //   placeType: PlaceType.address,
-                    //   placeholder: "Pickup Location",
-                    //   onSelected:(Place place)async{
-                    //     Geolocation? geolocation=await place.geolocation;
-                    //     mapController.animateCamera(
-                    //       CameraUpdate.newLatLng(geolocation?.coordinates)
-                    //     );
-                    //     mapController.animateCamera(
-                    //       CameraUpdate.newLatLngBounds(geolocation?.bounds,0)
-                    //     );
-                    //   } ,),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextFormField(
-                            decoration: InputDecoration(
-                          hintText: " location ",
-                          labelText: " Your location",
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                        )),
+                      OpenMapPicker(
+                        key: const ValueKey('pickup'),
+                        decoration:
+                            const InputDecoration(hintText: "My location"),
+                        onChanged: (FormattedLocation? newValue) {
+                          /// save new value
+                          log('got new value $newValue');
+                          _pickup = LatLng(newValue!.lat, newValue.lon);
+                        },
                       ),
-                        // Expanded(
-                        //   child: 
-                        //   ListView.builder(
-                        //     shrinkWrap: true,
-                        //   itemCount: placePredictions.length,
-                        //   itemBuilder: (context,index)=> LocationListTile(
-                        //     press:(){},
-                        //     location: placePredictions[index].description!,
-                        //   )),),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextFormField(
-                         // onTap: _handlePressButton,
-                          decoration: InputDecoration(
-                            hintText: "Destination",
-                            labelText: "Enter Destination",
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                          ),
-                        ),
+                      // Padding(
+                      //   padding: const EdgeInsets.all(8.0),
+//                         child: TextFormField(
+//                           controller: pickupController,
+//                             decoration: InputDecoration(
+//                           hintText: " location ",
+//                           labelText: " Your location",
+//                           border: OutlineInputBorder(
+//                             borderRadius: BorderRadius.circular(10.0),
+//                           ),
+//                           suffixIcon: IconButton(
+//               icon: const Icon(Icons.search),
+//               onPressed: () {
+//                 Future<LatLng?> searchPlace(String placeName) async {
+//   try {
+//     placeName= pickupController.text;
+//     List<Location> locations = await locationFromAddress(placeName);
+//     if (locations != null && locations.isNotEmpty) {
+//       return LatLng(locations.first.latitude, locations.first.longitude);
+//     }
+//   } catch (e) {
+//     print(e);
+//   }
+//   return null;
+// }
+//               },
+//             ),
+//                         )
+//                         ),
+                      // ),
+
+//                       Padding(
+//                         padding: const EdgeInsets.all(8.0),
+//                         child: TextFormField(
+//                          // onTap: _handlePressButton,
+//                          controller: destinationController,
+//                           decoration: InputDecoration(
+//                             hintText: "Destination",
+//                             labelText: "Enter Destination",
+//                             suffixIcon: IconButton(
+//   icon: const Icon(Icons.search),
+//   onPressed: () async {
+//     try {
+//       final String placeName = pickupController.text;
+//       final List<Location> locations = await locationFromAddress(placeName);
+//       if (locations.isNotEmpty) {
+//         final LatLng latLng = LatLng(locations.first.latitude, locations.first.longitude);
+//         setState(() {
+//   _pickup = latLng;
+// });
+
+//       } else {
+//         // Handle case when no locations are found
+//       }
+//     } catch (e) {
+//       print(e);
+//     }
+//   },
+// ),
+//                             border: OutlineInputBorder(
+//                               borderRadius: BorderRadius.circular(10.0),
+//                             ),
+//                           ),
+//                         ),
+//                       ),
+                      OpenMapPicker(
+                        key: const ValueKey('destination'),
+                        decoration:
+                            const InputDecoration(hintText: "Destination"),
+                        onChanged: (FormattedLocation? newValue) {
+                          /// save new value
+                          log('got new value $newValue');
+                          _destination = LatLng(newValue!.lat, newValue.lon);
+                        },
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -240,7 +286,11 @@ class _RiderState extends State<Rider> {
                                   minimumSize: const Size(30, 50)),
                               onPressed: () {
                                 // _storeData(userId);
-                                Navigator.pushNamed(context, "drivermap");
+                                setState(() {
+                                  
+                                });
+
+                                Navigator.of(context).pop();
                               },
                               child: const Text(
                                 "Find a driver",
@@ -267,10 +317,10 @@ class _RiderState extends State<Rider> {
                   ),
                 );
               }));
-  },
-  label: const Text('Search for driver'),
-  icon: const Icon(Icons.search),
-),
+        },
+        label: const Text('Search for driver'),
+        icon: const Icon(Icons.search),
+      ),
     );
   }
 }

@@ -10,7 +10,6 @@ import 'package:fairshare/firebase_options.dart';
 import 'package:fairshare/rider.dart';
 import 'package:fairshare/ridrive.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:fairshare/login.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
