@@ -80,18 +80,18 @@ class _MapSampleState extends State<MapSample> {
 final fare = calculateFarePrice(km);
 
             return AlertDialog(
-              title: const Text('Ride Details'),
+              title: const Center(child: Text('Ride Details')),
               contentPadding: const EdgeInsets.all(16.0),
               content: SingleChildScrollView(
                 child: Column(
                   children: [
                     Text('Distance: ${km}km'),
                     Text("Fare: Rs $fare"),
-                    ElevatedButton(onPressed: (){
-                       Navigator.of(context).pop();
-                      //passenger list function
-                    }, 
-                    child: const Text('Confirm Booking'),)
+                    // ElevatedButton(onPressed: (){
+                    //    Navigator.of(context).pop();
+                    //   //passenger list function
+                    // }, 
+                    // child: const Text('Confirm Booking'),)
                   ],
                 ),
               ),

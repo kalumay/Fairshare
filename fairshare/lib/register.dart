@@ -152,7 +152,7 @@ class _RegisterState extends State<Register> {
 
   void _storeData(String userId) async {
     try {
-      await FirebaseFirestore.instance.collection('passengerInfo').doc().set({
+      await FirebaseFirestore.instance.collection('passengerInfo').doc(userId).set({
         'name': name.text,
         'phone': phoneNumber.text.trim(),
       });
@@ -222,7 +222,7 @@ class _RegisterState extends State<Register> {
   @override
   void initState() {
     super.initState();
-    String uid = FirebaseAuth.instance.currentUser!.uid;
+    //String uid = FirebaseAuth.instance.currentUser!.uid;
     FirebaseAuth.instance.authStateChanges().listen((User? user) async {
       if (user == null) {
         print('User is currently signed out!');
