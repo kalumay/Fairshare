@@ -132,7 +132,7 @@ class _RiderState extends State<Rider> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) =>  ScheduleList(accept: true,)));
+                        builder: (context) =>  ScheduleList()));
               },
             ),
           

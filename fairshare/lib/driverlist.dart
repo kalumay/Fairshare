@@ -5,8 +5,8 @@ import 'package:fairshare/schedule.dart';
 import 'package:flutter/material.dart';
 
 class ScheduleList extends StatefulWidget {
-  late bool accept;
-  ScheduleList({Key? key,required this.accept}) : super(key: key);
+ 
+  const ScheduleList({Key? key}) : super(key: key);
 
   @override
   State<ScheduleList> createState() => _ScheduleListState();
@@ -71,7 +71,7 @@ class _ScheduleListState extends State<ScheduleList> {
                     Text('Schedule Name: ${data['scheduleName']}'),
                     Text('Start Address: ${data['startingAddress']}'),
                     Text('Destination: ${data['destinationAddress']}'),
-                     Text(widget.accept ? 'Accepted' : 'Not accepted'),
+                    // Text(widget.accept ? 'Accepted' : 'Not accepted'),
                     // add more relevant data to display here if needed
                   ],
                 ),

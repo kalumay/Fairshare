@@ -222,6 +222,7 @@ class _RegisterState extends State<Register> {
   @override
   void initState() {
     super.initState();
+    String uid = FirebaseAuth.instance.currentUser!.uid;
     FirebaseAuth.instance.authStateChanges().listen((User? user) async {
       if (user == null) {
         print('User is currently signed out!');

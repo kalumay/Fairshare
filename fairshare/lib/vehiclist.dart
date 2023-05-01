@@ -1,10 +1,7 @@
 // ignore_for_file: avoid_print, unused_field, unused_local_variable
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fairshare/driverlist.dart';
-import 'package:fairshare/map.dart';
-import 'package:fairshare/rider.dart';
-import 'package:fairshare/schedule.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
@@ -27,28 +24,96 @@ class _PassengerListState extends State<PassengerList> {
 
   LatLng? _destination;
  
-  // Retrieve the data
-Future<List<Map<String, dynamic>>> retrieveData() async {
-  try {
-    final QuerySnapshot querySnapshot =
-        await _firestore.collection('Rides').get();
+// // Retrieve the data
+// Future<List<Map<String, dynamic>>> retrieveData() async {
+//   try {
+//     // Get the documents in the Rides collection
+//     final QuerySnapshot ridesQuerySnapshot =
+//         await _firestore.collection('Rides').get();
 
-    // Assign retrieved data to existing variable instead of redeclaring it
-List<Map<String, dynamic>> dataList = querySnapshot.docs.map((doc) {
-  final data = doc.data() as Map<String, dynamic>;
-  data['documentId'] = doc.id;
-  return data;
-}).toList();
+//     // Iterate through the documents in the Rides collection
+//     List<Map<String, dynamic>> dataList = [];
+//     for (final QueryDocumentSnapshot ridesDocumentSnapshot
+//         in ridesQuerySnapshot.docs) {
+//       final ridesData = ridesDocumentSnapshot.data()
+//           as Map<String, dynamic>; // Cast to Map<String, dynamic>
+//       final userId = ridesData['userId'];
+
+//       // Get the document in the PassengerInfo collection that matches the userId in Rides
+//       final QuerySnapshot passengerInfoQuerySnapshot = await _firestore
+//           .collection('PassengerInfo')
+//           .where('userId', isEqualTo: userId)
+//           .get();
+
+//       final passengerInfoData = passengerInfoQuerySnapshot.docs.first.data()
+//           as Map<String, dynamic>; // Cast to Map<String, dynamic>
+
+//       // Combine the data from Rides and PassengerInfo
+//       final combinedData = {
+//         ...ridesData,
+//         'documentId': ridesDocumentSnapshot.id,
+//         'phone': passengerInfoData['phone'],
+//         'name': passengerInfoData['name']
+//       };
+
+//       dataList.add(combinedData);
+//     }
+//     return dataList;
+//   } catch (e) {
+//     print('Error retrieving data: $e');
+//     return [];
+//   }
+// }
 
 
+// Retrieve the data
+  Future<List<Map<String, dynamic>>> retrieveData() async {
+    try {
+      // Get the documents in the collection
+      final QuerySnapshot querySnapshot =
+          await _firestore.collection('Rides').get();
 
+      // Iterate through the documents and add the data to a list
+      List<Map<String, dynamic>> dataList = [];
+    
+    // for (final ridesDoc in ridesQuerySnapshot.docs) {
+    //   final ridesData = ridesDoc.data() as Map<String, dynamic>;
+    //   final passengerInfoDoc = await _firestore
+    //       .collection('PassengerInfo')
+    //       .doc(ridesData['userId'])
+    //       .get();
+    //   final passengerInfoData =
+    //       passengerInfoDoc.data() as Map<String, dynamic>;
 
-    return dataList;
-  } catch (e) {
-    print('Error retrieving data: $e');
-    return [];
+    //   final combinedData = {...ridesData, ...passengerInfoData};
+
+    //   dataList.add(combinedData);
+    // }
+      for (final QueryDocumentSnapshot documentSnapshot in querySnapshot.docs) {
+        final data = documentSnapshot.data()
+            as Map<String, dynamic>; // Cast to Map<String, dynamic>
+        data['documentId'] = documentSnapshot.id;
+      
+      
+      // // Retrieve passenger phone number based on userId
+      // final passengerInfoQuerySnapshot = await _firestore.collection('PassengerInfo')
+      //     .where('userId', isEqualTo: data['userId'])
+      //     .get();
+      // final passengerInfoData = passengerInfoQuerySnapshot.docs[0].data();
+      
+      // // Add passenger phone number to the data
+      // data['passengerPhone'] = passengerInfoData['phone'];
+
+        dataList.add(data);
+      }
+      return dataList;
+    } catch (e) {
+      print('Error retrieving data: $e');
+      return [];
+    }
   }
-}
+
+
 
 
   @override
@@ -68,12 +133,15 @@ List<Map<String, dynamic>> dataList = querySnapshot.docs.map((doc) {
             }
 
             final data = dataList[index];
-            //final scheduleName = data['scheduleName'] ?? '';
-            final startAddress = data['startingAddress'] ?? 'No start address provided';
-            final destination = data['destinationAddress'] ?? 'No destination address provided';
+            final startAddress = data['startingAddress']?.toString() ?? 'No start address provided';
+
+            //final String? scheduleName = data['scheduleName'] ?? '';
+            // final startAddress = data['startingAddress'] ?? 'No start address provided';
+            final String? destination = data['destinationAddress'] ?? '';
             final time = DateTime.parse(data['time']);
             final dateFormatted = DateFormat.yMd().format(time);
             final timeFormatted = DateFormat.jm().format(time);
+             String uid = FirebaseAuth.instance.currentUser!.uid;
 
             return SingleChildScrollView(
               child: ListTile(
@@ -85,11 +153,11 @@ List<Map<String, dynamic>> dataList = querySnapshot.docs.map((doc) {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    //Text('Schedule Name: ${data['scheduleName']}'),
                     Text('Start Address: ${data['startingAddress']}'),
                     Text('Destination: ${data['destinationAddress']}'),
                     Text('Date: $dateFormatted'),
                     Text('Time: $timeFormatted'),
+                    Text('Phone: ${data['phone']}')
                     // add more relevant data to display here if needed
                   ],
                 ),
@@ -138,13 +206,6 @@ List<Map<String, dynamic>> dataList = querySnapshot.docs.map((doc) {
           },
         ),
       ),
-      // floatingActionButton: ElevatedButton(
-      //   onPressed: () {
-      //     Navigator.pushNamed(context, "schedule");
-      //   },
-      //   child: const Text('Add'),
-      // ),
-      // floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 

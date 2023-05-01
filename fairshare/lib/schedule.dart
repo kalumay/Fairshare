@@ -191,14 +191,19 @@ String? _selectedDuration = '1 month';
   String snameValue = sname.text;
   String saddressValue = saddress.text;
   String daddressValue = daddress.text;
+   String frequency = _selectedFrequency!;
+  String duration = _selectedDuration!;
+  String uid = FirebaseAuth.instance.currentUser!.uid;
   final time = DateTime(_date.year, _date.month, _date.day, _time.hour, _time.minute);
-addDataToFirestore(snameValue, saddressValue, daddressValue);
+addDataToFirestore(snameValue, saddressValue, daddressValue, frequency, duration);
   // Store the entered values in a map
   Map<String, String> rideDetails = {
     'schedule_name': snameValue,
     'start_address': saddressValue,
     'destination_address': daddressValue,
     'time': time.toIso8601String(),
+    'frequency': frequency,
+    'duration': duration,
   };
 
   // Print the ride details to the console for debugging purposes
@@ -217,7 +222,7 @@ addDataToFirestore(snameValue, saddressValue, daddressValue);
       ),
     );
   }
- void addDataToFirestore(String snameValue, String saddressValue, String daddressValue) async {
+ void addDataToFirestore(String snameValue, String saddressValue, String daddressValue, String frequency, String duration) async {
   final user = FirebaseAuth.instance.currentUser;
   if (user == null) {
     // User is not authenticated, handle it accordingly
@@ -232,8 +237,10 @@ addDataToFirestore(snameValue, saddressValue, daddressValue);
       'destinationAddress': daddressValue,
       'userId': user.uid,
       'time': time.toIso8601String(),
+      'frequency': frequency,
+    'duration': duration,
     });
-     Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) =>  ScheduleList(accept: true,)));
+     Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) =>  ScheduleList()));
     Fluttertoast.showToast(
       msg: "Ride scheduled successfully!",
       toastLength: Toast.LENGTH_SHORT,

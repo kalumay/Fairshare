@@ -88,7 +88,7 @@ if (_permissionGranted == PermissionStatus.denied) {
         'driver':(context) => DriverForm(key: UniqueKey()),
         'rate':(context) => const Rate(),
         'drivermap':(context) => const DriverMap(),
-        'schedulelist':(context) =>  ScheduleList(accept: true,),
+        'schedulelist':(context) =>  ScheduleList(),
         'homes':(context) => Homes(userId: user!.uid),
         'search':(context) => Searches(onSearch: onSearch)
       },
